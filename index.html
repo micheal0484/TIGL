@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIGL</title>
+    <link rel="stylesheet" href="styles/mobile.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to TIGL Points</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Login</h2>
+            <div id="loginSection">
+                <form id="loginForm">
+                    <label for="pin">Enter PIN:</label>
+                    <input type="password" id="pin" name="pin" required>
+                    <button type="submit">Submit</button>
+                </form>
+                
+            </div>
+            <div id="logoutSection" style="display: none;">
+                <p>Logged in as: <span id="username"></span> (<span id="userType"></span>)</p>
+                <button id="logoutButton">Logout</button>
+            </div>
+        </section>
+        <div id="adminPanel" style="display: none;">
+    <h3>Admin Panel</h3>
+    
+    <!-- Admin Control Buttons -->
+    <div class="admin-controls">
+        <button id="showAddPlayerButton">Add Player</button>
+        <button id="showPlayersButton">Show Players</button>
+        <button id="showEditPlayerButton">Edit Player</button>
+        <button id="showAddCourseButton">Add Course</button>
+        <button id="showCoursesButton">Show Courses</button>
+    </div>
+    
+    <!-- Add Player Section -->
+    <div id="addPlayerSection" class="admin-section" style="display: none;">
+        <h4>Add New Player</h4>
+        <form id="addPlayerForm">
+            <div>
+                <label for="newUsername">Username:</label>
+                <input type="text" id="newUsername" name="username" required>
+            </div>
+            <div>
+                <label for="newPin">PIN:</label>
+                <input type="password" id="newPin" name="pin" required>
+            </div>
+            <div>
+                <label for="newHandicap">Handicap:</label>
+                <input type="number" id="newHandicap" name="handicap" step="0.1" value="0" max="36" required>
+            </div>
+            <div>
+                <label for="isAdmin">Admin Access:</label>
+                <input type="checkbox" id="isAdmin" name="isAdmin">
+            </div>
+            <button type="submit">Add Player</button>
+        </form>
+        <div id="addPlayerMessage"></div>
+    </div>
+    
+    <!-- Players List Section -->
+    <div id="playersSection" class="admin-section" style="display: none;">
+        <h4>All Players</h4>
+        <button id="refreshPlayersButton">Refresh Player List</button>
+        <div id="playersList"></div>
+    </div>
+
+    <!-- Edit Player Section -->
+    <div id="editPlayerSection" class="admin-section" style="display: none;">
+        <h4>Edit Player</h4>
+        <form id="editPlayerForm">
+            <div>
+                <label for="editUsername">Select Player:</label>
+                <select id="editUsername" name="username" required>
+                    <option value="">Select a player...</option>
+                </select>
+            </div>
+            <div>
+                <label for="editPin">New PIN:</label>
+                <input type="password" id="editPin" name="pin" required>
+            </div>
+            <div>
+                <label for="editHandicap">Handicap:</label>
+                <input type="number" id="editHandicap" name="handicap" step="0.1" required>
+            </div>
+            <div>
+                <label for="editIsAdmin">Admin Access:</label>
+                <input type="checkbox" id="editIsAdmin" name="isAdmin">
+            </div>
+            <button type="submit">Update Player</button>
+        </form>
+        <div id="editPlayerMessage"></div>
+    </div>
+
+    <!-- Add Course Section -->
+    <div id="addCourseSection" class="admin-section" style="display: none;">
+        <h4>Add New Course</h4>
+        <form id="addCourseForm">
+            <div>
+                <label for="courseName">Course Name:</label>
+                <input type="text" id="courseName" name="courseName" required>
+            </div>
+            <div>
+                <label for="courseHoles">Number of Holes:</label>
+                <select id="courseHoles" name="courseHoles" required>
+                    <option value="9">9 Holes</option>
+                    <option value="18">18 Holes</option>
+                </select>
+            </div>
+            <button type="submit">Create Course</button>
+        </form>
+        <div id="addCourseMessage"></div>
+        
+        <!-- Hole Details Section (initially hidden) -->
+        <div id="holeDetailsSection" style="display: none;">
+            <h5>Add Hole Details</h5>
+            <div id="holeInputs"></div>
+            <button id="saveCourseDetails" type="button">Save Course Details</button>
+        </div>
+    </div>
+
+    <!-- Courses List Section -->
+    <div id="coursesSection" class="admin-section" style="display: none;">
+        <h4>All Courses</h4>
+        <button id="refreshCoursesButton">Refresh Course List</button>
+        <div id="coursesList"></div>
+    </div>
+
+    <!-- Course Overview Section -->
+    <div id="courseOverviewSection" class="admin-section" style="display: none;">
+        <h4 id="courseOverviewTitle">Course Overview</h4>
+        <button id="backToCoursesButton" style="margin-bottom: 15px; background-color: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;">Back to Courses</button>
+        <div id="courseOverviewContent"></div>
+    </div>
+
+    <!-- Edit Course Section -->
+    <div id="editCourseSection" class="admin-section" style="display: none;">
+        <h4 id="editCourseTitle">Edit Course</h4>
+        <button id="backToCoursesFromEditButton" style="margin-bottom: 15px; background-color: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;">Back to Courses</button>
+        
+        <form id="editCourseForm">
+            <input type="hidden" id="editCourseId" name="courseId">
+            <div style="margin-bottom: 15px;">
+                <label for="editCourseName">Course Name:</label>
+                <input type="text" id="editCourseName" name="courseName" required style="margin-left: 10px; padding: 5px;">
+            </div>
+        </form>
+        
+        <div id="editHoleDetailsSection">
+            <h5>Edit Hole Details</h5>
+            <div id="editHoleInputs"></div>
+            <button id="saveEditedCourseDetails" type="button" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 3px; cursor: pointer; margin-top: 15px;">Save Changes</button>
+        </div>
+        <div id="editCourseMessage"></div>
+    </div>
+</div>
+    </main>
+    <footer>
+        <p>&copy; 2023 TIGL. All rights reserved.</p>
+    </footer>
+
+    <script>
+    function checkLoginStatus() {
+        const data = sessionStorage.getItem('userData');
+        if (data) {
+            const { username, isAdmin } = JSON.parse(data);
+            showLogoutSection(username, isAdmin);
+        }
+    }
+
+    function showLogoutSection(username, isAdmin) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('logoutSection').style.display = 'block';
+        document.getElementById('username').textContent = username;
+        document.getElementById('userType').textContent = isAdmin ? 'Admin' : 'Player';
+        
+        // Set background color based on user type
+        document.body.style.backgroundColor = isAdmin ? '#e0e0e0' : '#ffffff';
+        
+        // Show admin panel if user is admin
+        const adminPanel = document.getElementById('adminPanel');
+        adminPanel.style.display = isAdmin ? 'block' : 'none';
+        
+        // Hide all admin sections when first logging in
+        if (isAdmin) {
+            document.getElementById('addPlayerSection').style.display = 'none';
+            document.getElementById('playersSection').style.display = 'none';
+            document.getElementById('editPlayerSection').style.display = 'none';
+            document.getElementById('addCourseSection').style.display = 'none';
+            document.getElementById('coursesSection').style.display = 'none';
+            document.getElementById('courseOverviewSection').style.display = 'none';
+            document.getElementById('editCourseSection').style.display = 'none';
+        }
+    }
+
+    function showLoginSection() {
+        document.getElementById('loginSection').style.display = 'block';
+        document.getElementById('logoutSection').style.display = 'none';
+        sessionStorage.removeItem('userData');
+        // Reset background color to white when logging out
+        document.body.style.backgroundColor = '#ffffff';
+        // Hide admin panel when logging out
+        document.getElementById('adminPanel').style.display = 'none';
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        try {
+            const response = await fetch('./submit.php', {
+                method: 'POST',
+                body: formData
+            });
+            const text = await response.text();
+            if (!response.ok) {
+                throw new Error(text);
+            }
+            if (!text) {
+                alert('No response received from server');
+                return;
+            }
+            
+            if (text.startsWith('VALID:')) {
+                const [_, username, isAdmin] = text.split(':');
+                sessionStorage.setItem('userData', JSON.stringify({ 
+                    username: username.trim(),
+                    isAdmin: isAdmin.trim() === '1',
+                    loginTime: new Date().getTime()
+                }));
+                showLogoutSection(username.trim(), isAdmin.trim() === '1');
+                form.reset();
+            } else {
+                alert('Invalid PIN. Please try again.');
+            }
+        } catch (error) {
+            alert('An error occurred: ' + error.message);
+        }
+    }
+
+    // Event Listeners
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('logoutButton').addEventListener('click', showLoginSection);
+    document.getElementById('addPlayerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        
+        try {
+            const response = await fetch('./addplayer.php', {
+                method: 'POST',
+                body: formData
+            });
+            const text = await response.text();
+            const messageDiv = document.getElementById('addPlayerMessage');
+            
+            if (response.ok) {
+                messageDiv.textContent = 'Player added successfully';
+                messageDiv.style.color = 'green';
+                form.reset();
+            } else {
+                messageDiv.textContent = "Error adding player: " + text;
+                messageDiv.style.color = 'red';
+            }
+        } catch (error) {
+            alert('An error occurred: ' + error.message);
+        }
+    });
+    document.getElementById('refreshPlayersButton').addEventListener('click', async function() {
+        try {
+            const timestamp = new Date().getTime();
+            const response = await fetch(`./getplayers.php?_=${timestamp}`);
+            const text = await response.text();
+            const playersDiv = document.getElementById('playersList');
+            
+            if (response.ok) {
+                playersDiv.innerHTML = text;
+            } else {
+                playersDiv.innerHTML = '<p style="color: red;">Error loading players: ' + text + '</p>';
+            }
+        } catch (error) {
+            document.getElementById('playersList').innerHTML = '<p style="color: red;">An error occurred: ' + error.message + '</p>';
+        }
+    });
+    document.getElementById('showAddPlayerButton').addEventListener('click', function() {
+        const addPlayerSection = document.getElementById('addPlayerSection');
+        const button = document.getElementById('showAddPlayerButton');
+        
+        if (addPlayerSection.style.display === 'none' || addPlayerSection.style.display === '') {
+            addPlayerSection.style.display = 'block';
+            document.getElementById('playersSection').style.display = 'none';
+            document.getElementById('editPlayerSection').style.display = 'none';
+            button.textContent = 'Hide Add Player';
+            document.getElementById('showPlayersButton').textContent = 'Show Players';
+            document.getElementById('showEditPlayerButton').textContent = 'Edit Player';
+        } else {
+            addPlayerSection.style.display = 'none';
+            button.textContent = 'Add Player';
+        }
+    });
+
+    document.getElementById('showPlayersButton').addEventListener('click', function() {
+        const playersSection = document.getElementById('playersSection');
+        const button = document.getElementById('showPlayersButton');
+        
+        if (playersSection.style.display === 'none' || playersSection.style.display === '') {
+            playersSection.style.display = 'block';
+            document.getElementById('addPlayerSection').style.display = 'none';
+            document.getElementById('editPlayerSection').style.display = 'none';
+            button.textContent = 'Hide Players';
+            document.getElementById('showAddPlayerButton').textContent = 'Add Player';
+            document.getElementById('showEditPlayerButton').textContent = 'Edit Player';
+            // Auto-refresh the player list when showing it
+            document.getElementById('refreshPlayersButton').click();
+        } else {
+            playersSection.style.display = 'none';
+            button.textContent = 'Show Players';
+        }
+    });
+
+    document.getElementById('showEditPlayerButton').addEventListener('click', function() {
+        const editPlayerSection = document.getElementById('editPlayerSection');
+        const button = document.getElementById('showEditPlayerButton');
+        
+        if (editPlayerSection.style.display === 'none' || editPlayerSection.style.display === '') {
+            editPlayerSection.style.display = 'block';
+            document.getElementById('addPlayerSection').style.display = 'none';
+            document.getElementById('playersSection').style.display = 'none';
+            button.textContent = 'Hide Edit Player';
+            document.getElementById('showAddPlayerButton').textContent = 'Add Player';
+            document.getElementById('showPlayersButton').textContent = 'Show Players';
+            // Load players for editing
+            loadPlayersForEdit();
+        } else {
+            editPlayerSection.style.display = 'none';
+            button.textContent = 'Edit Player';
+        }
+    });
+
+    document.getElementById('showAddCourseButton').addEventListener('click', function() {
+        const addCourseSection = document.getElementById('addCourseSection');
+        const button = document.getElementById('showAddCourseButton');
+        
+        if (addCourseSection.style.display === 'none' || addCourseSection.style.display === '') {
+            addCourseSection.style.display = 'block';
+            hideOtherAdminSections(['addCourseSection']);
+            button.textContent = 'Hide Add Course';
+            resetOtherButtonTexts('showAddCourseButton');
+        } else {
+            addCourseSection.style.display = 'none';
+            button.textContent = 'Add Course';
+        }
+    });
+
+    document.getElementById('showCoursesButton').addEventListener('click', function() {
+        const coursesSection = document.getElementById('coursesSection');
+        const button = document.getElementById('showCoursesButton');
+        
+        if (coursesSection.style.display === 'none' || coursesSection.style.display === '') {
+            coursesSection.style.display = 'block';
+            hideOtherAdminSections(['coursesSection']);
+            button.textContent = 'Hide Courses';
+            resetOtherButtonTexts('showCoursesButton');
+            document.getElementById('refreshCoursesButton').click();
+        } else {
+            coursesSection.style.display = 'none';
+            button.textContent = 'Show Courses';
+        }
+    });
+
+    // Helper functions to manage multiple sections
+    function hideOtherAdminSections(except) {
+        const sections = ['addPlayerSection', 'playersSection', 'editPlayerSection', 'addCourseSection', 'coursesSection', 'courseOverviewSection', 'editCourseSection'];
+        sections.forEach(sectionId => {
+            if (!except.includes(sectionId)) {
+                document.getElementById(sectionId).style.display = 'none';
+            }
+        });
+    }
+
+    function resetOtherButtonTexts(except) {
+        const buttons = {
+            'showAddPlayerButton': 'Add Player',
+            'showPlayersButton': 'Show Players', 
+            'showEditPlayerButton': 'Edit Player',
+            'showAddCourseButton': 'Add Course',
+            'showCoursesButton': 'Show Courses'
+        };
+        
+        Object.keys(buttons).forEach(buttonId => {
+            if (buttonId !== except) {
+                document.getElementById(buttonId).textContent = buttons[buttonId];
+            }
+        });
+    }
+
+    // Function to load players into the edit dropdown
+    async function loadPlayersForEdit() {
+        try {
+            const timestamp = new Date().getTime();
+            const response = await fetch(`./getplayers.php?format=json&_=${timestamp}`);
+            const players = await response.json();
+            const select = document.getElementById('editUsername');
+            
+            select.innerHTML = '<option value="">Select a player...</option>';
+            players.forEach(player => {
+                const option = document.createElement('option');
+                option.value = player.username;
+                option.textContent = player.username;
+                option.dataset.pin = player.pin;
+                option.dataset.handicap = player.handicap;
+                option.dataset.isAdmin = player.isAdmin;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading players for edit:', error);
+        }
+    }
+
+    // Handle player selection for editing
+    document.getElementById('editUsername').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value) {
+            document.getElementById('editPin').value = selectedOption.dataset.pin;
+            document.getElementById('editHandicap').value = selectedOption.dataset.handicap;
+            document.getElementById('editIsAdmin').checked = selectedOption.dataset.isAdmin === '1';
+        }
+    });
+
+    // Handle edit player form submission
+    document.getElementById('editPlayerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        
+        try {
+            const response = await fetch('./editplayer.php', {
+                method: 'POST',
+                body: formData
+            });
+            const text = await response.text();
+            const messageDiv = document.getElementById('editPlayerMessage');
+            
+            if (response.ok) {
+                messageDiv.textContent = 'Player updated successfully';
+                messageDiv.style.color = 'green';
+                // Reload players for edit dropdown
+                loadPlayersForEdit();
+                form.reset();
+            } else {
+                messageDiv.textContent = "Error updating player: " + text;
+                messageDiv.style.color = 'red';
+            }
+        } catch (error) {
+            alert('An error occurred: ' + error.message);
+        }
+    });
+
+    // Handle course form submission
+    document.getElementById('addCourseForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        
+        try {
+            const response = await fetch('./addcourse.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            // First get the text response to see what we're actually receiving
+            const text = await response.text();
+            console.log('Raw response:', text); // Debug log
+            
+            if (!text) {
+                throw new Error('Empty response from server');
+            }
+            
+            let result;
+            try {
+                result = JSON.parse(text);
+            } catch (jsonError) {
+                throw new Error('Invalid JSON response: ' + text);
+            }
+            
+            const messageDiv = document.getElementById('addCourseMessage');
+            
+            if (response.ok && result.success) {
+                messageDiv.textContent = 'Course created successfully. Now add hole details.';
+                messageDiv.style.color = 'green';
+                generateHoleInputs(result.courseId, parseInt(formData.get('courseHoles')));
+                document.getElementById('holeDetailsSection').style.display = 'block';
+            } else {
+                messageDiv.textContent = "Error creating course: " + (result.error || 'Unknown error');
+                messageDiv.style.color = 'red';
+            }
+        } catch (error) {
+            alert('An error occurred: ' + error.message);
+        }
+    });
+
+    // Generate hole input forms
+    function generateHoleInputs(courseId, numberOfHoles) {
+        const container = document.getElementById('holeInputs');
+        container.innerHTML = `<input type="hidden" id="courseId" value="${courseId}">`;
+        
+        for (let i = 1; i <= numberOfHoles; i++) {
+            container.innerHTML += `
+                <div class="hole-input" style="border: 1px solid #ccc; margin: 10px 0; padding: 10px;">
+                    <h6>Hole ${i}</h6>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label>Yardage:</label>
+                            <input type="number" name="hole${i}_yardage" required>
+                        </div>
+                        <div>
+                            <label>Par:</label>
+                            <select name="hole${i}_par" required>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Men's Handicap:</label>
+                            <select name="hole${i}_mens_handicap" required>
+                                ${generateHandicapOptions(numberOfHoles)}
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px;">
+                        <div>
+                            <label>Women's Handicap:</label>
+                            <select name="hole${i}_womens_handicap" required>
+                                ${generateHandicapOptions(numberOfHoles)}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function generateHandicapOptions(numberOfHoles) {
+        let options = '';
+        for (let i = 1; i <= numberOfHoles; i++) {
+            options += `<option value="${i}">${i}</option>`;
+        }
+        return options;
+    }
+
+    // Save course details
+    document.getElementById('saveCourseDetails').addEventListener('click', async function() {
+        const courseId = document.getElementById('courseId').value;
+        const holeInputs = document.querySelectorAll('.hole-input');
+        const holes = [];
+        
+        holeInputs.forEach((holeDiv, index) => {
+            const holeNumber = index + 1;
+            const yardage = holeDiv.querySelector(`input[name="hole${holeNumber}_yardage"]`).value;
+            const par = holeDiv.querySelector(`select[name="hole${holeNumber}_par"]`).value;
+            const mensHandicap = holeDiv.querySelector(`select[name="hole${holeNumber}_mens_handicap"]`).value;
+            const womensHandicap = holeDiv.querySelector(`select[name="hole${holeNumber}_womens_handicap"]`).value;
+            
+            holes.push({
+                holeNumber,
+                yardage: parseInt(yardage),
+                par: parseInt(par),
+                mensHandicap: parseInt(mensHandicap),
+                womensHandicap: parseInt(womensHandicap)
+            });
+        });
+        
+        try {
+            const response = await fetch('./saveholes.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    courseId: courseId,
+                    holes: holes
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                alert('Course details saved successfully!');
+                document.getElementById('addCourseForm').reset();
+                document.getElementById('holeDetailsSection').style.display = 'none';
+                document.getElementById('addCourseMessage').textContent = '';
+            } else {
+                alert('Error saving course details: ' + (result.error || 'Unknown error'));
+            }
+        } catch (error) {
+            alert('An error occurred: ' + error.message);
+        }
+    });
+
+    // Refresh courses list
+    document.getElementById('refreshCoursesButton').addEventListener('click', async function() {
+        try {
+            const timestamp = new Date().getTime();
+            const response = await fetch(`./getcourses.php?_=${timestamp}`);
+            const text = await response.text();
+            const coursesDiv = document.getElementById('coursesList');
+            
+            if (response.ok) {
+                coursesDiv.innerHTML = text;
+            } else {
+                coursesDiv.innerHTML = '<p style="color: red;">Error loading courses: ' + text + '</p>';
+            }
+        } catch (error) {
+            document.getElementById('coursesList').innerHTML = '<p style="color: red;">An error occurred: ' + error.message + '</p>';
+        }
+    });
+
+    // Check login status when page loads
+    checkLoginStatus();
+
+    // Add this function after your existing JavaScript functions
+    function completeHoles(courseId, numberOfHoles) {
+        // Hide courses section and show add course section
+        document.getElementById('coursesSection').style.display = 'none';
+        document.getElementById('addCourseSection').style.display = 'block';
+        
+        // Reset button texts
+        document.getElementById('showCoursesButton').textContent = 'Show Courses';
+        document.getElementById('showAddCourseButton').textContent = 'Hide Add Course';
+        
+        // Hide the add course form and show hole details section directly
+        document.getElementById('addCourseForm').style.display = 'none';
+        document.getElementById('addCourseMessage').textContent = 'Complete the hole details for this course:';
+        document.getElementById('addCourseMessage').style.color = 'blue';
+        
+        // Generate holes inputs for the existing course
+        generateHoleInputs(courseId, numberOfHoles);
+        document.getElementById('holeDetailsSection').style.display = 'block';
+        
+        // Load existing hole data if any
+        loadExistingHoles(courseId);
+    }
+
+    // Function to load existing hole data for editing
+    async function loadExistingHoles(courseId) {
+        try {
+            const response = await fetch(`./getholes.php?courseId=${courseId}`);
+            const holes = await response.json();
+            
+            if (response.ok && holes.length > 0) {
+                holes.forEach(hole => {
+                    const holeDiv = document.querySelector(`input[name="hole${hole.hole_number}_yardage"]`);
+                    if (holeDiv) {
+                        holeDiv.value = hole.yardage;
+                        document.querySelector(`select[name="hole${hole.hole_number}_par"]`).value = hole.par;
+                        document.querySelector(`select[name="hole${hole.hole_number}_mens_handicap"]`).value = hole.mens_handicap;
+                        document.querySelector(`select[name="hole${hole.hole_number}_womens_handicap"]`).value = hole.womens_handicap;
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error loading existing holes:', error);
+        }
+    }
+
+    // Add this function for viewing course overview
+    function viewCourse(courseId, courseName) {
+        // Hide courses section and show course overview
+        document.getElementById('coursesSection').style.display = 'none';
+        document.getElementById('courseOverviewSection').style.display = 'block';
+        
+        // Update title
+        document.getElementById('courseOverviewTitle').textContent = courseName + ' - Course Overview';
+        
+        // Reset button texts
+        document.getElementById('showCoursesButton').textContent = 'Show Courses';
+        
+        // Load course details
+        loadCourseOverview(courseId);
+    }
+
+    // Function to load course overview data
+    async function loadCourseOverview(courseId) {
+        try {
+            const response = await fetch(`./getcourseoverview.php?courseId=${courseId}`);
+            const text = await response.text();
+            
+            if (response.ok) {
+                document.getElementById('courseOverviewContent').innerHTML = text;
+            } else {
+                document.getElementById('courseOverviewContent').innerHTML = '<p style="color: red;">Error loading course overview: ' + text + '</p>';
+            }
+        } catch (error) {
+            document.getElementById('courseOverviewContent').innerHTML = '<p style="color: red;">An error occurred: ' + error.message + '</p>';
+        }
+    }
+
+    // Back to courses button
+    document.getElementById('backToCoursesButton').addEventListener('click', function() {
+        document.getElementById('courseOverviewSection').style.display = 'none';
+        document.getElementById('coursesSection').style.display = 'block';
+        document.getElementById('showCoursesButton').textContent = 'Hide Courses';
+    });
+
+    // Back to courses from edit button
+    document.getElementById('backToCoursesFromEditButton').addEventListener('click', function() {
+        document.getElementById('editCourseSection').style.display = 'none';
+        document.getElementById('coursesSection').style.display = 'block';
+        document.getElementById('showCoursesButton').textContent = 'Hide Courses';
+    });
+
+    // Add this function after your existing JavaScript functions
+    function editCourse(courseId, courseName, numberOfHoles) {
+        // Hide courses section and show edit course section
+        document.getElementById('coursesSection').style.display = 'none';
+        document.getElementById('editCourseSection').style.display = 'block';
+        
+        // Update title and form
+        document.getElementById('editCourseTitle').textContent = 'Edit Course: ' + courseName;
+        document.getElementById('editCourseId').value = courseId;
+        document.getElementById('editCourseName').value = courseName;
+        
+        // Reset button texts
+        document.getElementById('showCoursesButton').textContent = 'Show Courses';
+        
+        // Generate edit holes inputs
+        generateEditHoleInputs(courseId, numberOfHoles);
+        
+        // Load existing hole data
+        loadExistingHolesForEdit(courseId);
+    }
+
+    // Function to generate editable hole inputs
+    function generateEditHoleInputs(courseId, numberOfHoles) {
+        const container = document.getElementById('editHoleInputs');
+        container.innerHTML = '';
+        
+        for (let i = 1; i <= numberOfHoles; i++) {
+            container.innerHTML += `
+                <div class="edit-hole-input" style="border: 1px solid #ccc; margin: 10px 0; padding: 10px;">
+                    <h6>Hole ${i}</h6>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label>Yardage:</label>
+                            <input type="number" name="edit_hole${i}_yardage" required>
+                        </div>
+                        <div>
+                            <label>Par:</label>
+                            <select name="edit_hole${i}_par" required>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Men's Handicap:</label>
+                            <select name="edit_hole${i}_mens_handicap" required>
+                                ${generateHandicapOptions(numberOfHoles)}
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px;">
+                        <div>
+                            <label>Women's Handicap:</label>
+                            <select name="edit_hole${i}_womens_handicap" required>
+                                ${generateHandicapOptions(numberOfHoles)}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Function to load existing hole data for editing
+    async function loadExistingHolesForEdit(courseId) {
+        try {
+            const response = await fetch(`./getholes.php?courseId=${courseId}`);
+            const holes = await response.json();
+            
+            if (response.ok && holes.length > 0) {
+                holes.forEach(hole => {
+                    const yardageInput = document.querySelector(`input[name="edit_hole${hole.hole_number}_yardage"]`);
+                    if (yardageInput) {
+                        yardageInput.value = hole.yardage;
+                        document.querySelector(`select[name="edit_hole${hole.hole_number}_par"]`).value = hole.par;
+                        document.querySelector(`select[name="edit_hole${hole.hole_number}_mens_handicap"]`).value = hole.mens_handicap;
+                        document.querySelector(`select[name="edit_hole${hole.hole_number}_womens_handicap"]`).value = hole.womens_handicap;
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error loading existing holes for edit:', error);
+            document.getElementById('editCourseMessage').textContent = 'Error loading hole data: ' + error.message;
+            document.getElementById('editCourseMessage').style.color = 'red';
+        }
+    }
+
+    // Back to courses button from edit
+    document.getElementById('backToCoursesFromEditButton').addEventListener('click', function() {
+        document.getElementById('editCourseSection').style.display = 'none';
+        document.getElementById('coursesSection').style.display = 'block';
+        document.getElementById('showCoursesButton').textContent = 'Hide Courses';
+        document.getElementById('editCourseMessage').textContent = '';
+    });
+
+    // Save edited course details
+    document.getElementById('saveEditedCourseDetails').addEventListener('click', async function() {
+        const courseId = document.getElementById('editCourseId').value;
+        const courseName = document.getElementById('editCourseName').value;
+        const holeInputs = document.querySelectorAll('.edit-hole-input');
+        const holes = [];
+        
+        if (!courseName.trim()) {
+            alert('Course name is required');
+            return;
+        }
+        
+        holeInputs.forEach((holeDiv, index) => {
+            const holeNumber = index + 1;
+            const yardage = holeDiv.querySelector(`input[name="edit_hole${holeNumber}_yardage"]`).value;
+            const par = holeDiv.querySelector(`select[name="edit_hole${holeNumber}_par"]`).value;
+            const mensHandicap = holeDiv.querySelector(`select[name="edit_hole${holeNumber}_mens_handicap"]`).value;
+            const womensHandicap = holeDiv.querySelector(`select[name="edit_hole${holeNumber}_womens_handicap"]`).value;
+            
+            holes.push({
+                holeNumber,
+                yardage: parseInt(yardage),
+                par: parseInt(par),
+                mensHandicap: parseInt(mensHandicap),
+                womensHandicap: parseInt(womensHandicap)
+            });
+        });
+        
+        try {
+            const response = await fetch('./editcourse.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    courseId: courseId,
+                    courseName: courseName,
+                    holes: holes
+                })
+            });
+            
+            const result = await response.json();
+            const messageDiv = document.getElementById('editCourseMessage');
+            
+            if (response.ok && result.success) {
+                messageDiv.textContent = 'Course updated successfully!';
+                messageDiv.style.color = 'green';
+                // Update the title
+                document.getElementById('editCourseTitle').textContent = 'Edit Course: ' + courseName;
+            } else {
+                messageDiv.textContent = 'Error updating course: ' + (result.error || 'Unknown error');
+                messageDiv.style.color = 'red';
+            }
+        } catch (error) {
+            alert('An error occurred: ' + error.message);
+        }
+    });
+    </script>
+</body>
+</html>
