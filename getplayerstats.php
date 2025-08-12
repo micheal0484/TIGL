@@ -72,7 +72,7 @@ try {
         $worstPoints = null;
         
         echo '<h6>Recent Rounds</h6>';
-        echo '<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">';
+        echo '<table class="table table-responsive">';
         echo '<tr style="background-color: #f2f2f2;">
                 <th style="border: 1px solid #ddd; padding: 8px;">Date</th>
                 <th style="border: 1px solid #ddd; padding: 8px;">Course</th>
@@ -192,39 +192,91 @@ try {
         
         echo '</div>';
         
-        // Add points leaderboard position if we have multiple players
+        // Add points leaderboard with all players
         echo '<div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 5px; border-left: 4px solid #ffc107;">';
-        echo '<h6 style="margin-top: 0; color: #856404;">Season Ranking</h6>';
+        echo '<h6 style="margin-top: 0; color: #856404;">Season Leaderboard</h6>';
         
-        // Get season leaderboard
+        // Get season leaderboard with all players
         $leaderStmt = $conn->prepare("
-            SELECT u.username, SUM(r.points) as season_points, COUNT(r.id) as rounds_played
-            FROM rounds r
-            JOIN users u ON r.user_id = u.id
-            WHERE r.season_id = ? AND r.is_completed = 1
-            GROUP BY r.user_id, u.username
-            ORDER BY season_points DESC
+            SELECT u.username, SUM(IFNULL(r.points, 0)) as season_points, COUNT(r.id) as rounds_played, u.id as user_id
+            FROM users u
+            LEFT JOIN rounds r ON u.id = r.user_id AND r.season_id = ? AND r.is_completed = 1
+            WHERE u.isAdmin = 0
+            GROUP BY u.id, u.username
+            ORDER BY season_points DESC, rounds_played DESC
         ");
         $leaderStmt->bind_param("i", $seasonId);
         $leaderStmt->execute();
         $leaderResult = $leaderStmt->get_result();
         
-        $position = 1;
-        $currentUserPosition = null;
-        while ($leader = $leaderResult->fetch_assoc()) {
-            if ($leader['username'] === $session['username']) {
-                $currentUserPosition = $position;
-                break;
+        if ($leaderResult->num_rows > 0) {
+            echo '<table class="table table-responsive">';
+            echo '<tr style="background-color: #f2f2f2;">
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Rank</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">Player</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #4CAF50;">Total Points</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Rounds Played</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Avg Points/Round</th>
+                  </tr>';
+            
+            $position = 1;
+            $currentUserPosition = null;
+            $lastPoints = null;
+            $actualPosition = 1;
+            
+            while ($leader = $leaderResult->fetch_assoc()) {
+                // Handle ties - same points get same rank
+                if ($lastPoints !== null && $leader['season_points'] != $lastPoints) {
+                    $position = $actualPosition;
+                }
+                
+                $isCurrentUser = ($leader['user_id'] == $userId);
+                $rowStyle = $isCurrentUser ? 'background-color: #e8f5e9; font-weight: bold;' : '';
+                
+                if ($isCurrentUser) {
+                    $currentUserPosition = $position;
+                }
+                
+                $avgPoints = $leader['rounds_played'] > 0 ? $leader['season_points'] / $leader['rounds_played'] : 0;
+                $pointsColor = $leader['season_points'] >= 0 ? '#4CAF50' : '#f44336';
+                
+                // Medal icons for top 3
+                $rankDisplay = $position;
+                if ($position == 1 && $leader['season_points'] > 0) $rankDisplay = '🥇 1st';
+                elseif ($position == 2 && $leader['season_points'] > 0) $rankDisplay = '🥈 2nd';
+                elseif ($position == 3 && $leader['season_points'] > 0) $rankDisplay = '🥉 3rd';
+                
+                echo '<tr style="' . $rowStyle . '">
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $rankDisplay . '</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">' . htmlspecialchars($leader['username']) . ($isCurrentUser ? ' (You)' : '') . '</td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: ' . $pointsColor . '; font-weight: bold;">' . number_format($leader['season_points'], 1) . '</td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $leader['rounds_played'] . '</td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . number_format($avgPoints, 1) . '</td>
+                      </tr>';
+                
+                $lastPoints = $leader['season_points'];
+                $actualPosition++;
             }
-            $position++;
-        }
-        
-        if ($currentUserPosition) {
-            echo '<p><strong>Your Position:</strong> #' . $currentUserPosition . ' with ' . number_format($totalPoints, 1) . ' points</p>';
+            
+            echo '</table>';
+            
+            // Add summary info
+            echo '<div style="margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 3px;">';
+            if ($currentUserPosition) {
+                echo '<p style="margin: 5px 0;"><strong>Your Current Position:</strong> #' . $currentUserPosition . ' with ' . number_format($totalPoints, 1) . ' points from ' . $totalRounds . ' rounds</p>';
+                
+                if ($totalRounds > 0) {
+                    echo '<p style="margin: 5px 0;"><strong>Your Average:</strong> ' . number_format($avgPoints, 1) . ' points per round</p>';
+                }
+            } else {
+                echo '<p style="margin: 5px 0;">Complete some rounds to see your ranking!</p>';
+            }
+            echo '</div>';
+            
         } else {
-            echo '<p>No ranking available - complete some rounds to see your position!</p>';
+            echo '<p>No players found for this season.</p>';
         }
-        
+
         $leaderStmt->close();
         echo '</div>';
         

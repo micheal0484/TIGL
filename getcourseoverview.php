@@ -41,7 +41,7 @@ try {
     
     if ($holesResult->num_rows > 0) {
         echo '<h5>Hole Details</h5>';
-        echo '<table style="width: 100%; border-collapse: collapse;">';
+        echo '<table class="table table-responsive">';
         echo '<tr style="background-color: #f2f2f2;">
                 <th style="border: 1px solid #ddd; padding: 8px;">Hole</th>
                 <th style="border: 1px solid #ddd; padding: 8px;">Yardage</th>

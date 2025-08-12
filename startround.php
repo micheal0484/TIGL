@@ -27,9 +27,15 @@ if (!$session) {
 $userId = $session['user_id'];
 $courseId = isset($_POST['courseId']) ? intval($_POST['courseId']) : 0;
 $seasonId = isset($_POST['seasonId']) ? intval($_POST['seasonId']) : 0;
+$handicap = isset($_POST['handicap']) ? floatval($_POST['handicap']) : null;
 
 if ($courseId <= 0 || $seasonId <= 0) {
     echo json_encode(['success' => false, 'error' => 'Invalid course or season selection']);
+    exit();
+}
+
+if ($handicap === null || $handicap < 0 || $handicap > 36) {
+    echo json_encode(['success' => false, 'error' => 'Invalid handicap value']);
     exit();
 }
 
@@ -69,8 +75,11 @@ try {
     $stmt->close();
     
     // Create new round
-    $stmt = $conn->prepare("INSERT INTO rounds (user_id, course_id, season_id) VALUES (?, ?, ?)");
-    $stmt->bind_param("iii", $userId, $courseId, $seasonId);
+    $stmt = $conn->prepare("
+        INSERT INTO rounds (user_id, course_id, season_id, round_date, handicap_used, is_completed) 
+        VALUES (?, ?, ?, NOW(), ?, 0)
+    ");
+    $stmt->bind_param("iiid", $userId, $courseId, $seasonId, $handicap);
     
     if ($stmt->execute()) {
         $roundId = $conn->insert_id;

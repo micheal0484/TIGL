@@ -92,59 +92,60 @@ try {
     $pointsCalculator = new PointsCalculator($conn);
     $holePoints = $pointsCalculator->calculateHolePoints($score, $par, $penalties, $obStrokes);
     
-    // Check if hole_scores table has points column, if not add it
-    $stmt = $conn->prepare("SHOW COLUMNS FROM hole_scores LIKE 'points'");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($result->num_rows === 0) {
-        // Add points column if it doesn't exist
-        $conn->query("ALTER TABLE hole_scores ADD COLUMN points DECIMAL(4,1) DEFAULT 0.0 AFTER ob_strokes");
-    }
-    $stmt->close();
-    
-    // Check if rounds table has points column, if not add it
-    $stmt = $conn->prepare("SHOW COLUMNS FROM rounds LIKE 'points'");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($result->num_rows === 0) {
-        // Add points column if it doesn't exist
-        $conn->query("ALTER TABLE rounds ADD COLUMN points DECIMAL(6,1) DEFAULT 0.0 AFTER total_ob");
-    }
-    $stmt->close();
-    
-    // Save hole score with points
+    // Update hole score with points
     $stmt = $conn->prepare("
         INSERT INTO hole_scores (round_id, hole_number, score, penalties, ob_strokes, points) 
         VALUES (?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE 
-            score = VALUES(score), 
-            penalties = VALUES(penalties), 
-            ob_strokes = VALUES(ob_strokes),
-            points = VALUES(points)
+        score = VALUES(score), 
+        penalties = VALUES(penalties), 
+        ob_strokes = VALUES(ob_strokes),
+        points = VALUES(points)
     ");
+
     $stmt->bind_param("iiiiid", $roundId, $holeNumber, $score, $penalties, $obStrokes, $holePoints);
-    
+
     if (!$stmt->execute()) {
-        throw new Exception('Failed to save hole score: ' . $stmt->error);
+        echo json_encode(['success' => false, 'error' => 'Failed to save hole score: ' . $stmt->error]);
+        exit();
     }
     $stmt->close();
     
-    // Update round totals including points
+    // Recalculate total round points (this will now include quota when round is completed)
     $stmt = $conn->prepare("
-        UPDATE rounds r SET 
-            total_score = (SELECT IFNULL(SUM(score), 0) FROM hole_scores WHERE round_id = r.id),
-            total_penalties = (SELECT IFNULL(SUM(penalties), 0) FROM hole_scores WHERE round_id = r.id),
-            total_ob = (SELECT IFNULL(SUM(ob_strokes), 0) FROM hole_scores WHERE round_id = r.id),
-            points = (SELECT IFNULL(SUM(points), 0) FROM hole_scores WHERE round_id = r.id)
-        WHERE r.id = ?
+        SELECT SUM(points) as total_hole_points, 
+               SUM(score) as total_score, 
+               SUM(penalties) as total_penalties, 
+               SUM(ob_strokes) as total_ob,
+               COUNT(*) as holes_played
+        FROM hole_scores 
+        WHERE round_id = ?
     ");
     $stmt->bind_param("i", $roundId);
+    $stmt->execute();
+    $totals = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
     
-    if (!$stmt->execute()) {
-        throw new Exception('Failed to update round totals: ' . $stmt->error);
-    }
+    // For incomplete rounds, just store the hole points (no quota yet)
+    // Quota will be added when the round is completed with match result
+    $stmt = $conn->prepare("
+        UPDATE rounds SET 
+            total_score = ?, 
+            total_penalties = ?, 
+            total_ob = ?, 
+            points = ?
+        WHERE id = ? AND user_id = ?
+    ");
+
+    $stmt->bind_param("iiiidi", 
+        $totals['total_score'], 
+        $totals['total_penalties'], 
+        $totals['total_ob'], 
+        $totals['total_hole_points'], // Just hole points for now
+        $roundId, 
+        $userId
+    );
+    $stmt->execute();
     $stmt->close();
     
     echo json_encode([

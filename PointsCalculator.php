@@ -44,6 +44,48 @@ class PointsCalculator {
         );
     }
     
+    // Get user's quota based on their handicap
+    public function getUserQuota($userId) {
+        try {
+            $stmt = $this->conn->prepare("SELECT handicap FROM users WHERE id = ?");
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+                $quota = floatval($user['handicap']) - 18.0;
+                $stmt->close();
+                return $quota;
+            }
+            $stmt->close();
+            return 0.0; // Default if user not found
+        } catch (Exception $e) {
+            return 0.0;
+        }
+    }
+    
+    // Add a new method to get quota for a specific round
+    public function getRoundQuota($roundId) {
+        try {
+            $stmt = $this->conn->prepare("SELECT handicap_used FROM rounds WHERE id = ?");
+            $stmt->bind_param("i", $roundId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                $round = $result->fetch_assoc();
+                $quota = floatval($round['handicap_used']) - 18.0;
+                $stmt->close();
+                return $quota;
+            }
+            $stmt->close();
+            return 0.0; // Default if round not found
+        } catch (Exception $e) {
+            return 0.0;
+        }
+    }
+    
     public function calculateHolePoints($score, $par, $penalties, $obStrokes) {
         $scoreToPar = $score - $par;
         $points = 0.0;
@@ -79,6 +121,48 @@ class PointsCalculator {
         $points += ($obStrokes * floatval($this->pointsConfig['points_ob_stroke']));
         
         return $points;
+    }
+    
+    // Calculate total round points including quota
+    public function calculateTotalRoundPoints($userId, $holePoints, $totalScore, $totalPar, $matchResult = null) {
+        $quota = $this->getUserQuota($userId);
+        $roundBonusPoints = $this->calculateRoundBonusPoints($totalScore, $totalPar);
+        $matchPoints = 0.0;
+        
+        if ($matchResult) {
+            $matchPoints = $this->getMatchResultPoints($matchResult === 'won');
+        }
+        
+        $totalPoints = $quota + $holePoints + $roundBonusPoints + $matchPoints;
+        
+        return array(
+            'quota' => $quota,
+            'holePoints' => $holePoints,
+            'roundBonusPoints' => $roundBonusPoints,
+            'matchPoints' => $matchPoints,
+            'totalPoints' => $totalPoints
+        );
+    }
+    
+    // Update the calculateTotalRoundPoints method to use round-specific handicap:
+    public function calculateTotalRoundPointsForRound($roundId, $holePoints, $totalScore, $totalPar, $matchResult = null) {
+        $quota = $this->getRoundQuota($roundId);
+        $roundBonusPoints = $this->calculateRoundBonusPoints($totalScore, $totalPar);
+        $matchPoints = 0.0;
+        
+        if ($matchResult) {
+            $matchPoints = $this->getMatchResultPoints($matchResult === 'won');
+        }
+        
+        $totalPoints = $quota + $holePoints + $roundBonusPoints + $matchPoints;
+        
+        return array(
+            'quota' => $quota,
+            'holePoints' => $holePoints,
+            'roundBonusPoints' => $roundBonusPoints,
+            'matchPoints' => $matchPoints,
+            'totalPoints' => $totalPoints
+        );
     }
     
     public function calculateRoundBonusPoints($totalScore, $totalPar) {

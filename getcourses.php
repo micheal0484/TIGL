@@ -26,7 +26,7 @@ try {
         $result = $stmt->get_result();
         
         if ($result->num_rows > 0) {
-            echo '<table style="width: 100%; border-collapse: collapse; margin-top: 10px;">';
+            echo '<table class="table table-responsive">';
             echo '<tr style="background-color: #f2f2f2;">
                     <th style="border: 1px solid #ddd; padding: 8px;">Course Name</th>
                     <th style="border: 1px solid #ddd; padding: 8px;">Holes</th>

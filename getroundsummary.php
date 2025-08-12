@@ -99,15 +99,15 @@ try {
     
     if ($scoresResult->num_rows > 0) {
         echo '<h5>Hole-by-Hole Scores</h5>';
-        echo '<table style="width: 100%; border-collapse: collapse;">';
+        echo '<table class="table table-responsive">';
         echo '<tr style="background-color: #f2f2f2;">
                 <th style="border: 1px solid #ddd; padding: 8px;">Hole</th>
-                <th style="border: 1px solid #ddd; padding: 8px;">Par</th>
-                <th style="border: 1px solid #ddd; padding: 8px;">Score</th>
-                <th style="border: 1px solid #ddd; padding: 8px;">+/-</th>
-                <th style="border: 1px solid #ddd; padding: 8px;">Penalties</th>
-                <th style="border: 1px solid #ddd; padding: 8px;">OB</th>
-                <th style="border: 1px solid #ddd; padding: 8px;">Points</th>
+                <th>Par</th>
+                <th>Score</th>
+                <th>+/-</th>
+                <th>Penalties</th>
+                <th>OB</th>
+                <th>Points</th>
               </tr>';
         
         $totalPar = 0;
@@ -117,13 +117,13 @@ try {
             $plusMinusText = $plusMinus > 0 ? '+' . $plusMinus : ($plusMinus < 0 ? $plusMinus : 'E');
             
             echo '<tr>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $score['hole_number'] . '</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $score['par'] . '</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $score['score'] . '</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $plusMinusText . '</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $score['penalties'] . '</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $score['ob_strokes'] . '</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #4CAF50; font-weight: bold;">' . number_format($score['points'], 1) . '</td>
+                    <td>' . $score['hole_number'] . '</td>
+                    <td>' . $score['par'] . '</td>
+                    <td>' . $score['score'] . '</td>
+                    <td>' . $plusMinusText . '</td>
+                    <td>' . $score['penalties'] . '</td>
+                    <td>' . $score['ob_strokes'] . '</td>
+                    <td class="text-center text-success font-weight-bold">' . number_format($score['points'], 1) . '</td>
                   </tr>';
         }
         
@@ -135,31 +135,65 @@ try {
         $netToPar = $netScore - $totalPar;
         $netToParText = $netToPar > 0 ? '+' . $netToPar : ($netToPar < 0 ? $netToPar : 'E');
         
-        echo '<tr style="background-color: #e9ecef; font-weight: bold;">
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">Total</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $totalPar . '</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $round['total_score'] . '</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $totalPlusMinusText . '</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $round['total_penalties'] . '</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $round['total_ob'] . '</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #4CAF50; font-weight: bold;">' . number_format($round['points'], 1) . '</td>
+        echo '<tr>
+                <td>Total</td>
+                <td>' . $totalPar . '</td>
+                <td>' . $round['total_score'] . '</td>
+                <td>' . $totalPlusMinusText . '</td>
+                <td>' . $round['total_penalties'] . '</td>
+                <td>' . $round['total_ob'] . '</td>
+                <td class="text-center text-success font-weight-bold">' . number_format($round['points'], 1) . '</td>
               </tr>';
         
         // Add net score row
-        echo '<tr style="background-color: #d1ecf1; font-weight: bold; color: #0c5460;">
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">Net</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $totalPar . '</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $netScore . '</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">' . $netToParText . '</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">-</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">-</td>
+        echo '<tr class="bg-info font-weight-bold text-dark">
+                <td>Net</td>
+                <td>' . $totalPar . '</td>
+                <td>' . $netScore . '</td>
+                <td>' . $netToParText . '</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
               </tr>';
-        
+        $stmt->close();
+
+        // Add points breakdown row if the round has match result or bonus points
+        $stmt = $conn->prepare("SELECT match_result FROM rounds WHERE id = ?");
+        $stmt->bind_param("i", $roundId);
+        $stmt->execute();
+        $matchResult = $stmt->get_result()->fetch_assoc()['match_result'];
+        $stmt->close();
+
+        if ($matchResult) {
+            // Calculate bonus points using PointsCalculator
+            $pointsCalculator = new PointsCalculator($conn);
+            $quota = $pointsCalculator->getUserQuota($session['user_id']);
+            $matchPoints = $pointsCalculator->getMatchResultPoints($matchResult === 'won');
+            $roundBonusPoints = $pointsCalculator->calculateRoundBonusPoints($round['total_score'], $totalPar);
+            
+            // Calculate hole points (total points minus quota and bonuses)
+            $holePoints = $round['points'] - $quota - $matchPoints - $roundBonusPoints;
+
+            echo '<tr class="bg-light font-weight-bold text-dark">
+                    <td>Points</td>
+                    <td class="font-weight-normal">Quota: ' . number_format($quota, 1) . '</td>
+                    <td class="font-weight-normal">Hole: +' . number_format($holePoints, 1) . '</td>
+                    <td class="font-weight-normal">Match: ' . ($matchPoints >= 0 ? '+' : '') . number_format($matchPoints, 1) . '</td>
+                    <td class="font-weight-normal">Bonus: ' . ($roundBonusPoints >= 0 ? '+' : '') . number_format($roundBonusPoints, 1) . '</td>
+                    <td>-</td>
+                    <td class="text-center text-success font-weight-bold">' . number_format($round['points'], 1) . '</td>
+                  </tr>';
+            
+            // Add explanation row
+            echo '<tr class="bg-light font-italic text-muted">
+                    <td colspan="7" class="border-1 p-2 text-center" style="font-size: 11px;">
+                        Points Breakdown: Quota (Handicap - 18) + Hole Performance + Match Result (' . ucfirst($matchResult) . ') + Round Bonus = Total Points
+                    </td>
+                  </tr>';
+        }
+
         echo '</table>';
     }
-    
-    $stmt->close();
     
 } catch (Exception $e) {
     echo '<p style="color: red;">Error loading round summary: ' . htmlspecialchars($e->getMessage()) . '</p>';
