@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIGL</title>
-    <link rel="stylesheet" href="styles/mobile.css">
+    <title>TIGL Points</title>
+    <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
     <header>
@@ -31,7 +31,8 @@
     </main>
 
     <!-- Admin Panel (outside main) -->
-    <div id="adminPanel" style="display: none;">
+    <div id="adminPanel" class="panel card">
+        <h3>Admin Panel</h3>
         <!-- Admin Control Buttons -->
         <div class="admin-controls">
             <button id="showAddPlayerButton">Add Player</button>
@@ -79,25 +80,31 @@
         <div id="editPlayerSection" class="admin-section" style="display: none;">
             <h4>Edit Player</h4>
             <form id="editPlayerForm">
-                <div>
-                    <label for="editUsername">Select Player:</label>
-                    <select id="editUsername" name="username" required>
-                        <option value="">Select a player...</option>
-                    </select>
+                <div style="margin-bottom: 15px;">
+                    <label>Username:</label>
+                    <input type="text" id="editPlayerUsername" name="username" required 
+                        style="margin-left: 10px; padding: 5px;" maxlength="50">
+                    <small style="display: block; margin-top: 5px; color: #6c757d;">
+                        Changing username will affect all historical data for this player
+                    </small>
                 </div>
-                <div>
-                    <label for="editPin">New PIN:</label>
-                    <input type="password" id="editPin" name="pin" required>
+                <div style="margin-bottom: 15px;">
+                    <label>PIN:</label>
+                    <input type="text" id="editPlayerPin" name="pin" required 
+                        style="margin-left: 10px; padding: 5px;" maxlength="4" pattern="[0-9]{4}">
                 </div>
-                <div>
-                    <label for="editHandicap">Handicap:</label>
-                    <input type="number" id="editHandicap" name="handicap" step="0.1" required>
+                <div style="margin-bottom: 15px;">
+                    <label>Handicap:</label>
+                    <input type="number" id="editPlayerHandicap" name="handicap" required 
+                        style="margin-left: 10px; padding: 5px;" min="0" max="36" step="0.1">
                 </div>
-                <div>
-                    <label for="editIsAdmin">Admin Access:</label>
-                    <input type="checkbox" id="editIsAdmin" name="isAdmin">
+                <div style="margin-bottom: 15px;">
+                    <label>
+                        <input type="checkbox" id="editPlayerIsAdmin" name="isAdmin"> Administrator
+                    </label>
                 </div>
-                <button type="submit">Update Player</button>
+                <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 3px; cursor: pointer;">Update Player</button>
+                <button type="button" onclick="document.getElementById('editPlayerSection').style.display='none'" style="background-color: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 3px; cursor: pointer; margin-left: 10px;">Cancel</button>
             </form>
             <div id="editPlayerMessage"></div>
         </div>
@@ -275,7 +282,7 @@
     </div>
 
     <!-- Player Panel (outside main, same level as admin panel) -->
-    <div id="playerPanel" style="display: none;">
+    <div id="playerPanel" class="panel card">
         <h3>Player Options</h3>
         <div class="player-controls">
             <button id="playRoundButton">Play a Round</button>
@@ -300,6 +307,15 @@
                     <select id="selectedSeason" name="seasonId" required style="margin-left: 10px; padding: 5px;">
                         <option value="">Choose a season...</option>
                     </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="selectedHandicap">Handicap for this round:</label>
+                    <select id="selectedHandicap" name="handicap" required style="margin-left: 10px; padding: 5px;">
+                        <option value="">Loading...</option>
+                    </select>
+                    <small style="display: block; margin-top: 5px; color: #6c757d; font-style: italic;">
+                        Your default handicap is pre-selected. You can change it for this round if needed.
+                    </small>
                 </div>
                 <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 3px; cursor: pointer;">Start Round</button>
             </form>
@@ -396,6 +412,21 @@
                 <button id="loadStatsButton" style="margin-left: 10px; background-color: #007bff; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">Load Stats</button>
             </div>
             <div id="playerStatsContent"></div>
+        </div>
+
+        <!-- My Rounds Section -->
+        <div id="myRoundsSection" class="player-section" style="display: none;">
+            <h4>My Rounds</h4>
+            <button id="backToPlayerMenuFromRoundsButton" style="margin-bottom: 15px; background-color: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;">Back to Menu</button>
+            
+            <div style="margin-bottom: 20px;">
+                <label for="myRoundsSeasonSelect">Select Season:</label>
+                <select id="myRoundsSeasonSelect" style="margin-left: 10px; padding: 5px;">
+                    <option value="">Choose a season...</option>
+                </select>
+                <button id="loadMyRoundsButton" style="margin-left: 10px; background-color: #007bff; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;">Load My Rounds</button>
+            </div>
+            <div id="myRoundsContent"></div>
         </div>
     </div>
 
@@ -894,9 +925,64 @@ document.getElementById('playRoundButton').addEventListener('click', function() 
     document.getElementById('holePlayingSection').style.display = 'none';
     document.getElementById('roundSummarySection').style.display = 'none';
     document.getElementById('seasonStatsSection').style.display = 'none';
+    document.getElementById('myRoundsSection').style.display = 'none'; // Add this line
+    
+    // Clear old data when showing Course Selection section
+    clearCourseSelectionData();
+    
     loadAvailableCourses();
     loadSeasons();
+    loadUserHandicap();
 });
+
+async function loadUserHandicap() {
+    try {
+        const response = await fetch('./getuserhandicap.php');
+        const result = await response.json();
+        const select = document.getElementById('selectedHandicap');
+        
+        if (response.ok && result.success) {
+            const userHandicap = parseFloat(result.handicap);
+            select.innerHTML = '';
+            
+            // Generate handicap options from 0 to 36 with 1 increments
+            for (let i = 0; i <= 36; i += 1) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i.toFixed(1);
+                
+                // Pre-select the user's current handicap
+                if (Math.abs(i - userHandicap) < 0.05) {
+                    option.selected = true;
+                    option.textContent += ' (Your Default)';
+                }
+                
+                select.appendChild(option);
+            }
+        } else {
+            // Fallback if we can't load user handicap
+            select.innerHTML = '<option value="18.0">18.0 (Default)</option>';
+            console.error('Error loading user handicap:', result.error || 'Unknown error');
+        }
+    } catch (error) {
+        console.error('Error loading user handicap:', error);
+        // Fallback
+        const select = document.getElementById('selectedHandicap');
+        select.innerHTML = '<option value="18.0">18.0 (Default)</option>';
+    }
+}
+
+function clearCourseSelectionData() {
+    // Clear the course and season selections
+    document.getElementById('selectedCourse').innerHTML = '<option value="">Choose a course...</option>';
+    document.getElementById('selectedSeason').innerHTML = '<option value="">Choose a season...</option>';
+    document.getElementById('selectedHandicap').innerHTML = '<option value="">Loading...</option>';
+    
+    // Clear any messages
+    document.getElementById('courseSelectionMessage').innerHTML = '';
+    
+    console.log('Cleared Course Selection data');
+}
 
 document.getElementById('backToPlayerMenuButton').addEventListener('click', function() {
     document.getElementById('courseSelectionSection').style.display = 'none';
@@ -1092,32 +1178,66 @@ async function loadRoundSummary(roundId) {
 // Handle match result submission
 document.getElementById('matchResultForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    
+    const formData = new FormData(this);
+    const roundId = document.getElementById('summaryRoundId').value;
+    formData.append('roundId', roundId);
+    
+    console.log('Submitting match result:', {
+        roundId: roundId,
+        matchResult: formData.get('matchResult')
+    });
     
     try {
-        const response = await fetch('./completematch.php', {
+        const response = await fetch('./savematchresult.php', {
             method: 'POST',
             body: formData
         });
         
-        const result = await response.json();
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
         
-        if (response.ok && result.success) {
-            document.getElementById('matchResultMessage').textContent = 'Round completed successfully!';
-            document.getElementById('matchResultMessage').style.color = 'green';
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+        
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('JSON parse error:', parseError);
+            console.error('Response was:', responseText);
+            document.getElementById('matchResultMessage').innerHTML = '<p style="color: red;">Error: Invalid response from server</p>';
+            return;
+        }
+        
+        console.log('Parsed response:', data);
+        
+        if (data.success) {
+            console.log('Match result saved successfully:', data);
+            document.getElementById('matchResultMessage').innerHTML = '<p style="color: green;">' + data.message + '</p>';
             
-            // Reset to player menu after 2 seconds
+            // Show detailed debug info
+            if (data.debug) {
+                console.log('Debug info:', data.debug);
+            }
+            console.log('Points breakdown:', {
+                oldPoints: data.oldPoints,
+                matchPoints: data.matchPoints,
+                roundBonusPoints: data.roundBonusPoints,
+                newTotalPoints: data.newTotalPoints
+            });
+            
+            // Return to player menu after a short delay
             setTimeout(() => {
-                document.getElementById('roundSummarySection').style.display = 'none';
-                document.getElementById('matchResultMessage').textContent = '';
-                currentRound = null;
-            }, 2000);
+                showPlayerMenu();
+            }, 5000);
         } else {
-            document.getElementById('matchResultMessage').textContent = 'Error completing match: ' + (result.error || 'Unknown error');
-            document.getElementById('matchResultMessage').style.color = 'red';
+            console.error('Match result save failed:', data.error);
+            document.getElementById('matchResultMessage').innerHTML = '<p style="color: red;">Error: ' + data.error + '</p>';
         }
     } catch (error) {
-        alert('An error occurred: ' + error.message);
+        console.error('Network error saving match result:', error);
+        document.getElementById('matchResultMessage').innerHTML = '<p style="color: red;">Network error occurred</p>';
     }
 });
 
@@ -1126,8 +1246,23 @@ document.getElementById('viewStatsButton').addEventListener('click', function() 
     document.getElementById('courseSelectionSection').style.display = 'none';
     document.getElementById('holePlayingSection').style.display = 'none';
     document.getElementById('roundSummarySection').style.display = 'none';
+    document.getElementById('myRoundsSection').style.display = 'none'; // Add this line
+    
+    // Clear old data when showing Season Stats section
+    clearSeasonStatsData();
+    
     loadSeasonsForStats();
 });
+
+function clearSeasonStatsData() {
+    // Clear the season selection
+    document.getElementById('statsSeasonSelect').innerHTML = '<option value="">Choose a season...</option>';
+    
+    // Clear the stats content
+    document.getElementById('playerStatsContent').innerHTML = '';
+    
+    console.log('Cleared Season Stats data');
+}
 
 document.getElementById('backToPlayerMenuFromStatsButton').addEventListener('click', function() {
     document.getElementById('seasonStatsSection').style.display = 'none';
@@ -1269,52 +1404,126 @@ async function loadPlayersForEdit() {
         const response = await fetch('./getplayers.php');
         const text = await response.text();
         
-        // Parse the HTML response to extract player data
+        // Since we're editing players directly by filling the form, not using a dropdown
+        // We don't need to populate a select dropdown for edit
+        // Instead, let's create a simple player selection interface
+        
+        const editSection = document.getElementById('editPlayerSection');
+        
+        // Check if we already have a player selection area
+        let playerSelectDiv = document.getElementById('playerSelectDiv');
+        if (!playerSelectDiv) {
+            playerSelectDiv = document.createElement('div');
+            playerSelectDiv.id = 'playerSelectDiv';
+            playerSelectDiv.style.cssText = 'margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;';
+            
+            const title = document.createElement('h5');
+            title.textContent = 'Select Player to Edit:';
+            playerSelectDiv.appendChild(title);
+            
+            const playerList = document.createElement('div');
+            playerList.id = 'editPlayerList';
+            playerSelectDiv.appendChild(playerList);
+            
+            // Insert before the form
+            const form = document.getElementById('editPlayerForm');
+            editSection.insertBefore(playerSelectDiv, form);
+        }
+        
+        // Parse the HTML response to extract player data and create buttons
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, 'text/html');
         const playerRows = doc.querySelectorAll('tr');
         
-        const select = document.getElementById('editUsername');
-        select.innerHTML = '<option value="">Select a player...</option>';
+        const playerListDiv = document.getElementById('editPlayerList');
+        playerListDiv.innerHTML = '';
         
         // Skip header row, start from index 1
         for (let i = 1; i < playerRows.length; i++) {
             const cells = playerRows[i].querySelectorAll('td');
-            if (cells.length >= 2) {
+            if (cells.length >= 4) { // username, pin, handicap, admin
                 const username = cells[0].textContent.trim();
-                const option = document.createElement('option');
-                option.value = username;
-                option.textContent = username;
-                select.appendChild(option);
+                const handicap = cells[2].textContent.trim();
+                const isAdmin = cells[3].textContent.trim() === 'Yes';
+                
+                const playerButton = document.createElement('button');
+                playerButton.textContent = `${username} (Handicap: ${handicap})`;
+                playerButton.style.cssText = 'margin: 5px; padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;';
+                playerButton.onclick = () => loadPlayerForEdit(username);
+                
+                playerListDiv.appendChild(playerButton);
             }
         }
     } catch (error) {
         console.error('Error loading players for edit:', error);
+        const editSection = document.getElementById('editPlayerSection');
+        const errorDiv = document.createElement('div');
+        errorDiv.innerHTML = '<p style="color: red;">Error loading players: ' + error.message + '</p>';
+        editSection.insertBefore(errorDiv, editSection.firstChild);
+    }
+}
+
+// Add this new function to load individual player data:
+async function loadPlayerForEdit(username) {
+    try {
+        const response = await fetch(`./getplayerdetails.php?username=${encodeURIComponent(username)}`);
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            // Populate the edit form
+            document.getElementById('editPlayerUsername').value = result.username;
+            document.getElementById('editPlayerPin').value = result.pin;
+            document.getElementById('editPlayerHandicap').value = result.handicap;
+            document.getElementById('editPlayerIsAdmin').checked = result.isAdmin;
+            
+            // Store the original username for the form submission
+            document.getElementById('editPlayerUsername').dataset.originalUsername = username;
+            
+            // Show success message
+            document.getElementById('editPlayerMessage').innerHTML = '<p style="color: green;">Player loaded successfully. Make your changes and click Update Player.</p>';
+        } else {
+            document.getElementById('editPlayerMessage').innerHTML = '<p style="color: red;">Error loading player: ' + (result.error || 'Unknown error') + '</p>';
+        }
+    } catch (error) {
+        document.getElementById('editPlayerMessage').innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
     }
 }
 
 // Handle edit player form submission
 document.getElementById('editPlayerForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    
+    const formData = new FormData(this);
+    
+    // Add the original username so the server knows which player to update
+    const originalUsername = document.getElementById('editPlayerUsername').dataset.originalUsername;
+    formData.append('originalUsername', originalUsername);
     
     try {
         const response = await fetch('./editplayer.php', {
             method: 'POST',
             body: formData
         });
-        const text = await response.text();
+        
+        const result = await response.text();
         const messageDiv = document.getElementById('editPlayerMessage');
         
         if (response.ok) {
-            messageDiv.textContent = 'Player updated successfully';
+            messageDiv.textContent = result;
             messageDiv.style.color = 'green';
-            e.target.reset();
+            
+            // Reload the players list to show the updated information
+            loadPlayersForEdit();
+            
+            // Clear the form
+            document.getElementById('editPlayerForm').reset();
+            document.getElementById('editPlayerSection').style.display = 'none';
         } else {
-            messageDiv.textContent = "Error updating player: " + text;
+            messageDiv.textContent = 'Error: ' + result;
             messageDiv.style.color = 'red';
         }
     } catch (error) {
+        const messageDiv = document.getElementById('editPlayerMessage');
         messageDiv.textContent = 'An error occurred: ' + error.message;
         messageDiv.style.color = 'red';
     }
@@ -1394,6 +1603,49 @@ function generateHoleInputs(holeCount, courseId) {
     container.dataset.courseId = courseId;
 }
 
+function showPlayerMenu() {
+    // Hide all player subsections
+    document.getElementById('courseSelectionSection').style.display = 'none';
+    document.getElementById('holePlayingSection').style.display = 'none';
+    document.getElementById('roundSummarySection').style.display = 'none';
+    document.getElementById('seasonStatsSection').style.display = 'none';
+    document.getElementById('myRoundsSection').style.display = 'none';
+    
+    // Clear any current round data
+    currentRound = null;
+    
+    // Clear all section data to prevent stale information
+    clearAllPlayerSectionData();
+    
+    // Make sure the main player panel is visible
+    const playerPanel = document.getElementById('playerPanel');
+    playerPanel.style.display = 'block';
+    playerPanel.classList.add('show');
+    
+    console.log('Returned to player menu');
+}
+
+function clearAllPlayerSectionData() {
+    // Clear My Rounds data
+    document.getElementById('myRoundsSeasonSelect').innerHTML = '<option value="">Choose a season...</option>';
+    document.getElementById('myRoundsContent').innerHTML = '';
+    
+    // Clear Season Stats data
+    document.getElementById('statsSeasonSelect').innerHTML = '<option value="">Choose a season...</option>';
+    document.getElementById('playerStatsContent').innerHTML = '';
+    
+    // Clear Course Selection data
+    document.getElementById('selectedCourse').innerHTML = '<option value="">Choose a course...</option>';
+    document.getElementById('selectedSeason').innerHTML = '<option value="">Choose a season...</option>';
+    document.getElementById('courseSelectionMessage').innerHTML = '';
+    
+    // Clear Round Summary data
+    document.getElementById('roundSummaryContent').innerHTML = '';
+    document.getElementById('matchResultMessage').innerHTML = '';
+    
+    console.log('Cleared all player section data');
+}
+
 // Save course details
 document.getElementById('saveCourseDetails').addEventListener('click', async function() {
     const container = document.getElementById('holeInputs');
@@ -1447,11 +1699,155 @@ document.getElementById('refreshCoursesButton').addEventListener('click', async 
     }
 });
 
-// Add the missing "My Rounds" button functionality
 document.getElementById('myRoundsButton').addEventListener('click', function() {
-    // You can implement this later - for now just show an alert
-    alert('My Rounds feature coming soon!');
+    document.getElementById('myRoundsSection').style.display = 'block';
+    document.getElementById('courseSelectionSection').style.display = 'none';
+    document.getElementById('holePlayingSection').style.display = 'none';
+    document.getElementById('roundSummarySection').style.display = 'none';
+    document.getElementById('seasonStatsSection').style.display = 'none';
+
+    // Clear old data when showing My Rounds section
+    clearMyRoundsData();
+
+    loadSeasonsForMyRounds();
 });
+
+document.getElementById('backToPlayerMenuFromRoundsButton').addEventListener('click', function() {
+    document.getElementById('myRoundsSection').style.display = 'none';
+});
+
+function clearMyRoundsData() {
+    // Clear the season selection
+    const seasonSelect = document.getElementById('myRoundsSeasonSelect');
+    seasonSelect.innerHTML = '<option value="">Choose a season...</option>';
+    
+    // Clear the rounds content
+    document.getElementById('myRoundsContent').innerHTML = '';
+    
+    console.log('Cleared My Rounds data');
+}
+
+// Load seasons for my rounds
+async function loadSeasonsForMyRounds() {
+    try {
+        const response = await fetch('./getseasons.php');
+        const seasons = await response.json();
+        const select = document.getElementById('myRoundsSeasonSelect');
+        
+        select.innerHTML = '<option value="">Choose a season...</option>';
+        seasons.forEach(season => {
+            const option = document.createElement('option');
+            option.value = season.id;
+            option.textContent = season.year + (season.is_active ? ' (Current)' : '');
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading seasons for my rounds:', error);
+    }
+}
+
+// Load my rounds for selected season
+document.getElementById('loadMyRoundsButton').addEventListener('click', async function() {
+    const seasonId = document.getElementById('myRoundsSeasonSelect').value;
+    
+    if (!seasonId) {
+        alert('Please select a season first');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`./getmyrounds.php?seasonId=${seasonId}`);
+        const text = await response.text();
+        
+        if (response.ok) {
+            document.getElementById('myRoundsContent').innerHTML = text;
+        } else {
+            document.getElementById('myRoundsContent').innerHTML = '<p style="color: red;">Error loading rounds: ' + text + '</p>';
+        }
+    } catch (error) {
+        document.getElementById('myRoundsContent').innerHTML = '<p style="color: red;">An error occurred: ' + error.message + '</p>';
+    }
+});
+
+// Function to view my round details (called from the view buttons) - Fixed version
+async function viewMyRoundDetails(roundId) {
+    try {
+        const response = await fetch(`./getroundsummary.php?roundId=${roundId}`);
+        const text = await response.text();
+        
+        if (response.ok) {
+            // Hide the my rounds section and show the content in a dedicated area
+            document.getElementById('myRoundsSection').style.display = 'none';
+            document.getElementById('roundSummarySection').style.display = 'block';
+            document.getElementById('roundSummaryContent').innerHTML = text;
+            
+            // Check if round is completed by making a separate API call to get round status
+            const statusResponse = await fetch(`./getroundstatus.php?roundId=${roundId}`);
+            const statusData = await statusResponse.json();
+            
+            const matchForm = document.getElementById('matchResultForm');
+            if (matchForm) {
+                if (statusData.success && statusData.isCompleted && statusData.hasMatchResult) {
+                    // Round is fully completed with match result - hide the form
+                    matchForm.style.display = 'none';
+                } else {
+                    // Round needs match result - show the form
+                    matchForm.style.display = 'block';
+                    // Set the round ID for the form
+                    document.getElementById('summaryRoundId').value = roundId;
+                }
+            }
+            
+            // Add a back button to return to my rounds
+            const backButton = document.createElement('button');
+            backButton.textContent = 'Back to My Rounds';
+            backButton.style.cssText = 'margin-bottom: 15px; background-color: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;';
+            backButton.onclick = function() {
+                document.getElementById('roundSummarySection').style.display = 'none';
+                document.getElementById('myRoundsSection').style.display = 'block';
+            };
+            
+            const summaryContent = document.getElementById('roundSummaryContent');
+            summaryContent.insertBefore(backButton, summaryContent.firstChild);
+            
+        } else {
+            alert('Error loading round details: ' + text);
+        }
+    } catch (error) {
+        alert('An error occurred: ' + error.message);
+    }
+}
+
+// Function to resume an incomplete round
+async function resumeRound(roundId) {
+    try {
+        // Get round details
+        const response = await fetch(`./getrounddetails.php?roundId=${roundId}`);
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            // Set up the current round
+            currentRound = {
+                roundId: roundId,
+                courseId: result.courseId,
+                holes: result.holes,
+                currentHole: result.nextHole,
+                courseName: result.courseName
+            };
+            
+            // Hide my rounds section and show hole playing section
+            document.getElementById('myRoundsSection').style.display = 'none';
+            document.getElementById('holePlayingSection').style.display = 'block';
+            
+            // Load the next hole to play
+            loadHoleInfo(currentRound.courseId, currentRound.currentHole);
+        } else {
+            alert('Error resuming round: ' + (result.error || 'Unknown error'));
+        }
+    } catch (error) {
+        alert('An error occurred: ' + error.message);
+    }
+}
 
 // Check login status when page loads
 window.addEventListener('load', checkLoginStatus);

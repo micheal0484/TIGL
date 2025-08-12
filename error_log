@@ -1,0 +1,342 @@
+[25-Jul-2025 17:14:29 America/Boise] PHP Parse error:  syntax error, unexpected token "echo" in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 9
+[25-Jul-2025 17:14:42 America/Boise] PHP Parse error:  syntax error, unexpected token "echo" in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 9
+[25-Jul-2025 17:14:48 America/Boise] PHP Parse error:  syntax error, unexpected token "echo" in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 9
+[25-Jul-2025 17:17:48 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:17:54 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:21:04 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:21:06 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:21:10 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:21:12 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:21:13 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:22:39 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:22:46 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:22:47 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:23:30 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:23:31 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:23:31 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:23:37 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:23:38 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:23:38 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:23:38 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:23:38 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:23:39 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:27:00 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:27:06 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:33:08 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:34:53 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:35:25 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:38:52 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:39:40 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:39:44 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:40:58 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:42:08 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:44:58 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:46:33 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM u...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:51:00 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM `...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:52:43 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM `...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:53:21 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM `...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:53:27 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM `...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 17:53:53 America/Boise] PHP Warning:  Undefined variable $stmt in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 36
+[25-Jul-2025 17:53:53 America/Boise] PHP Fatal error:  Uncaught Error: Call to a member function close() on null in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:36
+Stack trace:
+#0 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 36
+[25-Jul-2025 17:55:43 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'frczbzmy_user_info.users' doesn't exist in /home1/frczbzmy/public_html/website_bfab42c6/submit.php:13
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/submit.php(13): mysqli->prepare('SELECT * FROM `...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/submit.php on line 13
+[25-Jul-2025 18:26:35 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 2
+[25-Jul-2025 18:26:45 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 2
+[25-Jul-2025 18:28:12 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 2
+[25-Jul-2025 18:28:57 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 2
+[25-Jul-2025 18:31:07 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'id' in 'field list' in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php:24
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php(24): mysqli->prepare('SELECT id FROM ...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 24
+[25-Jul-2025 18:33:01 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'id' in 'field list' in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php:24
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php(24): mysqli->prepare('SELECT id FROM ...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 24
+[25-Jul-2025 18:33:11 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'id' in 'field list' in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php:24
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php(24): mysqli->prepare('SELECT id FROM ...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 24
+[25-Jul-2025 18:33:54 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'id' in 'field list' in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php:24
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php(24): mysqli->prepare('SELECT id FROM ...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 24
+[25-Jul-2025 18:34:21 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'id' in 'field list' in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php:24
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php(24): mysqli->prepare('SELECT id FROM ...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 24
+[25-Jul-2025 18:34:42 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'id' in 'field list' in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php:24
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php(24): mysqli->prepare('SELECT id FROM ...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 24
+[25-Jul-2025 18:37:37 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'id' in 'field list' in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php:24
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php(24): mysqli->prepare('SELECT id FROM ...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 24
+[25-Jul-2025 18:37:39 America/Boise] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'id' in 'field list' in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php:24
+Stack trace:
+#0 /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php(24): mysqli->prepare('SELECT id FROM ...')
+#1 {main}
+  thrown in /home1/frczbzmy/public_html/website_bfab42c6/addplayer.php on line 24
+[02-Aug-2025 12:11:00 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/getcourses.php on line 2
+[02-Aug-2025 12:11:57 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/addcourse.php on line 2
+[02-Aug-2025 12:12:03 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/addcourse.php on line 2
+[02-Aug-2025 12:13:07 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/getcourses.php on line 2
+[02-Aug-2025 12:13:32 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/getcourses.php on line 2
+[02-Aug-2025 12:16:51 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/getcourses.php on line 2
+[02-Aug-2025 12:17:02 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/addcourse.php on line 2
+[02-Aug-2025 12:18:36 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/getcourses.php on line 2
+[02-Aug-2025 12:22:38 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/getcourses.php on line 2
+[02-Aug-2025 12:25:11 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/test_db.php on line 2
+[02-Aug-2025 12:25:50 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/test_db.php on line 2
+[02-Aug-2025 12:26:22 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/addcourse.php on line 2
+[02-Aug-2025 12:39:54 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/saveholes.php on line 2
+[02-Aug-2025 12:47:27 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/getholes.php on line 2
+[02-Aug-2025 12:48:10 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/getholes.php on line 2
+[02-Aug-2025 12:52:22 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/getholes.php on line 2
+[02-Aug-2025 12:54:23 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/getholes.php on line 2
+[02-Aug-2025 13:43:29 America/Boise] Session data: Array
+(
+)
+
+[02-Aug-2025 13:44:35 America/Boise] Session data: Array
+(
+)
+
+[02-Aug-2025 13:45:48 America/Boise] Session data: Array
+(
+)
+
+[02-Aug-2025 13:48:33 America/Boise] Session data: Array
+(
+)
+
+[02-Aug-2025 13:49:00 America/Boise] Session data: Array
+(
+)
+
+[02-Aug-2025 13:49:43 America/Boise] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /home1/frczbzmy/public_html/website_bfab42c6/session_info.php on line 19
+[02-Aug-2025 16:26:51 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/PointsCalculator.php on line 2
+[02-Aug-2025 16:27:04 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/PointsCalculator.php on line 2
+[02-Aug-2025 16:27:09 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/PointsCalculator.php on line 2
+[02-Aug-2025 16:34:16 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/PointsCalculator.php on line 2
+[02-Aug-2025 16:38:25 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/PointsCalculator.php on line 2
+[02-Aug-2025 16:47:10 America/Boise] PHP Parse error:  syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/PointsCalculator.php on line 2
+[02-Aug-2025 16:49:25 America/Boise] saveholescore.php fatal error: Fatal Error: syntax error, unexpected token "<", expecting end of file in /home1/frczbzmy/public_html/website_bfab42c6/PointsCalculator.php on line 2
+[02-Aug-2025 16:50:59 America/Boise] Received data: roundId=11, holeNumber=1, score=4, penalties=0, obStrokes=0
+[02-Aug-2025 16:50:59 America/Boise] saveholescore.php fatal error: Fatal Error: The number of elements in the type definition string must match the number of bind variables in /home1/frczbzmy/public_html/website_bfab42c6/saveholescore.php on line 127
+[02-Aug-2025 16:53:18 America/Boise] Received data: roundId=12, holeNumber=1, score=4, penalties=0, obStrokes=0
+[02-Aug-2025 16:53:20 America/Boise] Received data: roundId=12, holeNumber=2, score=5, penalties=0, obStrokes=0
+[02-Aug-2025 16:53:27 America/Boise] Received data: roundId=12, holeNumber=3, score=5, penalties=1, obStrokes=0
+[02-Aug-2025 16:53:33 America/Boise] Received data: roundId=12, holeNumber=4, score=8, penalties=0, obStrokes=1
+[02-Aug-2025 16:53:37 America/Boise] Received data: roundId=12, holeNumber=5, score=6, penalties=2, obStrokes=0
+[02-Aug-2025 16:53:40 America/Boise] Received data: roundId=12, holeNumber=6, score=2, penalties=0, obStrokes=0
+[02-Aug-2025 16:53:44 America/Boise] Received data: roundId=12, holeNumber=7, score=8, penalties=2, obStrokes=0
+[02-Aug-2025 16:53:47 America/Boise] Received data: roundId=12, holeNumber=8, score=6, penalties=1, obStrokes=0
+[02-Aug-2025 16:53:50 America/Boise] Received data: roundId=12, holeNumber=9, score=8, penalties=0, obStrokes=0
+[02-Aug-2025 17:01:25 America/Boise] Received data: roundId=13, holeNumber=1, score=9, penalties=0, obStrokes=1
+[02-Aug-2025 17:01:36 America/Boise] Received data: roundId=13, holeNumber=2, score=6, penalties=1, obStrokes=0
+[02-Aug-2025 17:01:39 America/Boise] Received data: roundId=13, holeNumber=3, score=8, penalties=0, obStrokes=1
+[02-Aug-2025 17:01:45 America/Boise] Received data: roundId=13, holeNumber=4, score=3, penalties=0, obStrokes=0
+[02-Aug-2025 17:01:48 America/Boise] Received data: roundId=13, holeNumber=5, score=7, penalties=0, obStrokes=1
+[02-Aug-2025 17:01:51 America/Boise] Received data: roundId=13, holeNumber=6, score=5, penalties=0, obStrokes=0
+[02-Aug-2025 17:01:52 America/Boise] Received data: roundId=13, holeNumber=7, score=4, penalties=0, obStrokes=0
+[02-Aug-2025 17:01:56 America/Boise] Received data: roundId=13, holeNumber=8, score=5, penalties=0, obStrokes=0
+[02-Aug-2025 17:02:02 America/Boise] Received data: roundId=13, holeNumber=9, score=9, penalties=1, obStrokes=1
+[02-Aug-2025 17:02:48 America/Boise] Received data: roundId=14, holeNumber=1, score=5, penalties=0, obStrokes=0
+[02-Aug-2025 17:02:50 America/Boise] Received data: roundId=14, holeNumber=2, score=4, penalties=0, obStrokes=0
+[02-Aug-2025 17:02:51 America/Boise] Received data: roundId=14, holeNumber=3, score=4, penalties=0, obStrokes=0
+[02-Aug-2025 17:02:51 America/Boise] Received data: roundId=14, holeNumber=4, score=4, penalties=0, obStrokes=0
+[02-Aug-2025 17:02:52 America/Boise] Received data: roundId=14, holeNumber=5, score=3, penalties=0, obStrokes=0
+[02-Aug-2025 17:02:53 America/Boise] Received data: roundId=14, holeNumber=6, score=4, penalties=0, obStrokes=0
+[02-Aug-2025 17:02:53 America/Boise] Received data: roundId=14, holeNumber=7, score=4, penalties=0, obStrokes=0
+[02-Aug-2025 17:02:54 America/Boise] Received data: roundId=14, holeNumber=8, score=3, penalties=0, obStrokes=0
+[02-Aug-2025 17:02:55 America/Boise] Received data: roundId=14, holeNumber=9, score=5, penalties=0, obStrokes=0
+[11-Aug-2025 16:32:44 America/Boise] Received data: roundId=15, holeNumber=1, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:32:47 America/Boise] Received data: roundId=15, holeNumber=2, score=5, penalties=0, obStrokes=0
+[11-Aug-2025 16:32:50 America/Boise] Received data: roundId=15, holeNumber=3, score=3, penalties=0, obStrokes=0
+[11-Aug-2025 16:32:52 America/Boise] Received data: roundId=15, holeNumber=4, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:32:54 America/Boise] Received data: roundId=15, holeNumber=5, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:32:55 America/Boise] Received data: roundId=15, holeNumber=6, score=3, penalties=0, obStrokes=0
+[11-Aug-2025 16:32:57 America/Boise] Received data: roundId=15, holeNumber=7, score=5, penalties=0, obStrokes=0
+[11-Aug-2025 16:32:58 America/Boise] Received data: roundId=15, holeNumber=8, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:33:04 America/Boise] Received data: roundId=15, holeNumber=9, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:44:18 America/Boise] Received data: roundId=16, holeNumber=1, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:44:19 America/Boise] Received data: roundId=16, holeNumber=2, score=5, penalties=0, obStrokes=0
+[11-Aug-2025 16:44:19 America/Boise] Received data: roundId=16, holeNumber=3, score=3, penalties=0, obStrokes=0
+[11-Aug-2025 16:44:20 America/Boise] Received data: roundId=16, holeNumber=4, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:44:21 America/Boise] Received data: roundId=16, holeNumber=5, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:44:21 America/Boise] Received data: roundId=16, holeNumber=6, score=3, penalties=0, obStrokes=0
+[11-Aug-2025 16:44:22 America/Boise] Received data: roundId=16, holeNumber=7, score=5, penalties=0, obStrokes=0
+[11-Aug-2025 16:44:23 America/Boise] Received data: roundId=16, holeNumber=8, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:44:24 America/Boise] Received data: roundId=16, holeNumber=9, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:45:23 America/Boise] Received data: roundId=17, holeNumber=1, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:45:24 America/Boise] Received data: roundId=17, holeNumber=2, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:45:25 America/Boise] Received data: roundId=17, holeNumber=3, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:45:25 America/Boise] Received data: roundId=17, holeNumber=4, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:45:26 America/Boise] Received data: roundId=17, holeNumber=5, score=3, penalties=0, obStrokes=0
+[11-Aug-2025 16:45:26 America/Boise] Received data: roundId=17, holeNumber=6, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:45:27 America/Boise] Received data: roundId=17, holeNumber=7, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:45:28 America/Boise] Received data: roundId=17, holeNumber=8, score=3, penalties=0, obStrokes=0
+[11-Aug-2025 16:45:29 America/Boise] Received data: roundId=17, holeNumber=9, score=5, penalties=0, obStrokes=0
+[11-Aug-2025 16:47:13 America/Boise] Received data: roundId=18, holeNumber=1, score=3, penalties=0, obStrokes=0
+[11-Aug-2025 16:47:13 America/Boise] Received data: roundId=18, holeNumber=2, score=5, penalties=0, obStrokes=0
+[11-Aug-2025 16:47:14 America/Boise] Received data: roundId=18, holeNumber=3, score=3, penalties=0, obStrokes=0
+[11-Aug-2025 16:47:15 America/Boise] Received data: roundId=18, holeNumber=4, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:47:15 America/Boise] Received data: roundId=18, holeNumber=5, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:47:16 America/Boise] Received data: roundId=18, holeNumber=6, score=3, penalties=0, obStrokes=0
+[11-Aug-2025 16:47:17 America/Boise] Received data: roundId=18, holeNumber=7, score=5, penalties=0, obStrokes=0
+[11-Aug-2025 16:47:18 America/Boise] Received data: roundId=18, holeNumber=8, score=4, penalties=0, obStrokes=0
+[11-Aug-2025 16:47:22 America/Boise] Received data: roundId=18, holeNumber=9, score=4, penalties=0, obStrokes=0

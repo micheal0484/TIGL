@@ -158,20 +158,54 @@ nav a:hover {
     padding-bottom: 10px;
 }
 
-/* Responsive design for mobile */
+/* Mobile-specific overrides and enhancements */
 @media (max-width: 600px) {
-    #playerPanel.show {
-        margin: 10px;
-        padding: 20px;
+    /* Smaller screens get more compact spacing */
+    .card {
+        margin: 5px;
+        padding: 15px;
     }
     
-    .player-controls {
-        flex-direction: column;
-        align-items: center;
+    /* Stack form elements vertically on very small screens */
+    .form-group {
+        margin-bottom: 15px;
     }
     
-    .player-controls button {
-        width: 100%;
-        max-width: 300px;
+    /* Make tables more mobile-friendly */
+    .table {
+        font-size: 12px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 6px 8px;
+    }
+    
+    /* Ensure buttons don't get too small */
+    .btn {
+        min-height: 44px; /* iOS touch target size */
+        min-width: 44px;
+    }
+    
+    /* Special handling for player controls on mobile */
+    .player-controls .btn {
+        margin-bottom: 10px;
+    }
+}
+
+/* Touch-specific enhancements */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase touch targets for touch devices */
+    .btn {
+        padding: 15px 20px;
+    }
+    
+    .form-control {
+        padding: 12px 15px;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .btn:hover {
+        transform: none;
     }
 }

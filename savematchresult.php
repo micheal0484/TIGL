@@ -29,13 +29,31 @@ if (!in_array($matchResult, ['won', 'lost'])) {
 }
 
 try {
-    // Verify round belongs to user and get round details
-    $stmt = $conn->prepare("
-        SELECT r.total_score, r.points, c.par_total 
-        FROM rounds r 
-        JOIN courses c ON r.course_id = c.id 
-        WHERE r.id = ? AND r.user_id = ?
-    ");
+    // First check if par_total column exists in courses table
+    $stmt = $conn->prepare("SHOW COLUMNS FROM courses LIKE 'par_total'");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $parTotalExists = $result->num_rows > 0;
+    $stmt->close();
+    
+    // Get round details with calculated par total
+    if ($parTotalExists) {
+        $stmt = $conn->prepare("
+            SELECT r.total_score, r.points, r.course_id, c.par_total, 
+                   (SELECT SUM(h.par) FROM holes h WHERE h.course_id = r.course_id) as calculated_par
+            FROM rounds r 
+            JOIN courses c ON r.course_id = c.id 
+            WHERE r.id = ? AND r.user_id = ?
+        ");
+    } else {
+        $stmt = $conn->prepare("
+            SELECT r.total_score, r.points, r.course_id,
+                   (SELECT SUM(h.par) FROM holes h WHERE h.course_id = r.course_id) as calculated_par
+            FROM rounds r 
+            WHERE r.id = ? AND r.user_id = ?
+        ");
+    }
+    
     $stmt->bind_param("ii", $roundId, $userId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -48,48 +66,64 @@ try {
     $roundData = $result->fetch_assoc();
     $stmt->close();
     
-    // Calculate bonus points
+    // Use calculated par or par_total
+    $coursePar = $parTotalExists ? $roundData['par_total'] : $roundData['calculated_par'];
+    
+    // Debug logging
+    error_log("Round $roundId - Current points: " . $roundData['points'] . ", Total score: " . $roundData['total_score'] . ", Course par: " . $coursePar . ", Match result: " . $matchResult);
+    
+    // Calculate total points including quota for this specific round
     $pointsCalculator = new PointsCalculator($conn);
-    $matchPoints = $pointsCalculator->getMatchResultPoints($matchResult === 'won');
-    $roundBonusPoints = $pointsCalculator->calculateRoundBonusPoints($roundData['total_score'], $roundData['par_total']);
     
-    $totalBonusPoints = $matchPoints + $roundBonusPoints;
-    $newTotalPoints = $roundData['points'] + $totalBonusPoints;
+    // Get current hole points from the round
+    $currentHolePoints = floatval($roundData['points']);
     
-    // Update round with match result and bonus points
+    // Calculate total round points with round-specific quota
+    $pointsBreakdown = $pointsCalculator->calculateTotalRoundPointsForRound(
+        $roundId, 
+        $currentHolePoints, 
+        $roundData['total_score'], 
+        $coursePar, 
+        $matchResult
+    );
+    
+    // Debug logging
+    error_log("Points breakdown: " . json_encode($pointsBreakdown));
+    
+    // Update round with match result and total points (including quota)
     $stmt = $conn->prepare("
         UPDATE rounds SET 
             match_result = ?, 
-            points = ?
+            points = ?,
+            is_completed = 1
         WHERE id = ? AND user_id = ?
     ");
-    $stmt->bind_param("sdii", $matchResult, $newTotalPoints, $roundId, $userId);
-    
+    $stmt->bind_param("sdii", $matchResult, $pointsBreakdown['totalPoints'], $roundId, $userId);
+
     if (!$stmt->execute()) {
-        echo json_encode(['success' => false, 'error' => 'Failed to save match result']);
+        echo json_encode(['success' => false, 'error' => 'Failed to save match result: ' . $stmt->error]);
         exit();
     }
     $stmt->close();
     
-    $message = "Round completed! ";
-    if ($matchPoints > 0) {
-        $message .= "Match win bonus: +" . number_format($matchPoints, 1) . " points. ";
-    }
-    if ($roundBonusPoints > 0) {
-        $message .= "Round bonus: +" . number_format($roundBonusPoints, 1) . " points. ";
-    }
-    $message .= "Total round points: " . number_format($newTotalPoints, 1);
-    
+    // Return detailed breakdown
     echo json_encode([
         'success' => true,
-        'matchPoints' => $matchPoints,
-        'roundBonusPoints' => $roundBonusPoints,
-        'totalPoints' => $newTotalPoints,
-        'message' => $message
+        'quota' => $pointsBreakdown['quota'],
+        'holePoints' => $pointsBreakdown['holePoints'],
+        'matchPoints' => $pointsBreakdown['matchPoints'],
+        'roundBonusPoints' => $pointsBreakdown['roundBonusPoints'],
+        'totalPoints' => $pointsBreakdown['totalPoints'],
+        'message' => "Round completed! Quota: " . number_format($pointsBreakdown['quota'], 1) . 
+                     ", Hole Points: +" . number_format($pointsBreakdown['holePoints'], 1) . 
+                     ", Match: " . ($pointsBreakdown['matchPoints'] >= 0 ? "+" : "") . number_format($pointsBreakdown['matchPoints'], 1) . 
+                     ", Round Bonus: " . ($pointsBreakdown['roundBonusPoints'] >= 0 ? "+" : "") . number_format($pointsBreakdown['roundBonusPoints'], 1) . 
+                     " = Total: " . number_format($pointsBreakdown['totalPoints'], 1) . " points"
     ]);
     
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
+    error_log("savematchresult.php error: " . $e->getMessage());
 }
 
 $conn->close();
