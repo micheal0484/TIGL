@@ -239,6 +239,8 @@ nav a:hover {
 .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin: 20px 0;
 }
 
 /* Alert Styles */
@@ -430,6 +432,15 @@ nav a:hover {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+    body {
+        padding: 0 10px;
+        overflow-x: hidden; /* Prevent body horizontal scroll but allow table scroll */
+    }
+    
+    .container {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
     header h1 {
         font-size: 1.8em;
     }
@@ -475,11 +486,20 @@ nav a:hover {
     
     .table-responsive {
         font-size: 14px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .table th,
     .table td {
         padding: 8px 12px;
+        white-space: nowrap;
+        min-width: 80px;
+    }
+    
+    /* Ensure tables don't break out of containers on mobile */
+    .table {
+        table-layout: auto;
     }
 }
 
@@ -503,5 +523,50 @@ nav a:hover {
     
     .card {
         padding: 15px;
+    }
+    
+    /* Extra compact table styling for very small screens */
+    .table th,
+    .table td {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+    
+    .table-responsive {
+        font-size: 12px;
+    }
+}
+
+.match-completion-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.match-completion-buttons button {
+    flex: 1;
+    min-width: 150px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.match-completion-buttons button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 768px) {
+    .match-completion-buttons {
+        flex-direction: column;
+    }
+    
+    .match-completion-buttons button {
+        width: 100%;
+        margin-bottom: 10px;
     }
 }

@@ -82,13 +82,14 @@ class PointsCalculator {
             $stmt->close();
             return 0.0; // Default if round not found
         } catch (Exception $e) {
+            error_log("Error getting round quota: " . $e->getMessage());
             return 0.0;
         }
     }
     
     public function calculateHolePoints($score, $par, $penalties, $obStrokes) {
         $scoreToPar = $score - $par;
-        $points = 0.0;
+        $points = 0.0; // Start with float
         
         switch ($scoreToPar) {
             case -3:
@@ -117,10 +118,11 @@ class PointsCalculator {
                 break;
         }
         
+        // Add penalty and OB adjustments
         $points += ($penalties * floatval($this->pointsConfig['points_penalty_stroke']));
         $points += ($obStrokes * floatval($this->pointsConfig['points_ob_stroke']));
         
-        return $points;
+        return floatval($points); // Ensure return is float
     }
     
     // Calculate total round points including quota

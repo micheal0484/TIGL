@@ -26,7 +26,8 @@ try {
         $result = $stmt->get_result();
         
         if ($result->num_rows > 0) {
-            echo '<table class="table table-responsive">';
+            echo '<div class="table-responsive">';
+            echo '<table class="table">';
             echo '<tr style="background-color: #f2f2f2;">
                     <th style="border: 1px solid #ddd; padding: 8px;">Course Name</th>
                     <th style="border: 1px solid #ddd; padding: 8px;">Holes</th>
@@ -53,6 +54,7 @@ try {
                       </tr>';
             }
             echo '</table>';
+            echo '</div>'; // Close table-responsive div
         } else {
             echo '<p>No courses found. Create your first course using the "Add Course" button.</p>';
         }

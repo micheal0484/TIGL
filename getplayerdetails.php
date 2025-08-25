@@ -25,7 +25,7 @@ try {
         echo json_encode([
             'success' => true,
             'username' => $player['username'],
-            'pin' => $player['pin'],
+            'pin' => str_pad($player['pin'], 4, '0', STR_PAD_LEFT), // Ensure 4 digits with leading zeros
             'handicap' => floatval($player['handicap']),
             'isAdmin' => (bool)$player['isAdmin']
         ]);

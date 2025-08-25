@@ -18,7 +18,7 @@
                 <form id="loginForm">
                     <div>
                         <label for="pin">PIN:</label>
-                        <input type="password" id="pin" name="pin" required>
+                        <input type="tel" id="pin" name="pin" required inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="Enter 4-digit PIN">
                     </div>
                     <button type="submit">Login</button>
                 </form>
@@ -42,6 +42,7 @@
             <button id="showCoursesButton">Show Courses</button>
             <button id="showRoundsButton">Manage Rounds</button>
             <button id="showPointsButton">Manage Points</button>
+            <button id="showSeasonsButton">Manage Seasons</button>
         </div>
         
         <!-- Add Player Section -->
@@ -54,7 +55,7 @@
                 </div>
                 <div>
                     <label for="newPin">PIN:</label>
-                    <input type="password" id="newPin" name="pin" required>
+                    <input type="tel" id="newPin" name="pin" required inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="Enter 4-digit PIN">
                 </div>
                 <div>
                     <label for="newHandicap">Handicap:</label>
@@ -90,8 +91,8 @@
                 </div>
                 <div style="margin-bottom: 15px;">
                     <label>PIN:</label>
-                    <input type="text" id="editPlayerPin" name="pin" required 
-                        style="margin-left: 10px; padding: 5px;" maxlength="4" pattern="[0-9]{4}">
+                    <input type="tel" id="editPlayerPin" name="pin" required inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="Enter 4-digit PIN"
+                        style="margin-left: 10px; padding: 5px;">
                 </div>
                 <div style="margin-bottom: 15px;">
                     <label>Handicap:</label>
@@ -278,6 +279,48 @@
             </form>
             
             <div id="pointsMessage"></div>
+        </div>
+
+        <!-- Seasons Management Section -->
+        <div id="seasonsSection" class="admin-section" style="display: none;">
+            <h4>Season Management</h4>
+            
+            <!-- Current Seasons List -->
+            <div style="margin-bottom: 30px;">
+                <h5>Current Seasons</h5>
+                <button id="refreshSeasonsButton" style="margin-bottom: 15px;">Refresh Season List</button>
+                <div id="seasonsList"></div>
+            </div>
+            
+            <!-- Add New Season -->
+            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px;">
+                <h5>Start New Season</h5>
+                <form id="addSeasonForm">
+                    <div style="margin-bottom: 15px;">
+                        <label for="newSeasonYear">Season Year:</label>
+                        <input type="number" id="newSeasonYear" name="year" required 
+                               min="2024" max="2050" 
+                               style="margin-left: 10px; padding: 8px; width: 100px;"
+                               placeholder="2026">
+                        <small style="display: block; margin-top: 5px; color: #6c757d;">
+                            Enter the year for the new season (e.g., 2026)
+                        </small>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label>
+                            <input type="checkbox" id="setAsActive" name="setAsActive" checked style="margin-right: 8px;">
+                            Set as Active Season
+                        </label>
+                        <small style="display: block; margin-top: 5px; color: #6c757d;">
+                            Active season will be the default for new rounds
+                        </small>
+                    </div>
+                    <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 3px; cursor: pointer;">
+                        Start New Season
+                    </button>
+                </form>
+                <div id="addSeasonMessage"></div>
+            </div>
         </div>
     </div>
 
@@ -767,12 +810,23 @@ async function loadSeasonsForRounds() {
         const select = document.getElementById('roundsSeasonSelect');
         
         select.innerHTML = '<option value="">Choose a season...</option>';
+        let activeSeasonFound = false;
+        
         seasons.forEach(season => {
             const option = document.createElement('option');
             option.value = season.id;
             option.textContent = season.year + (season.is_active ? ' (Current)' : '');
+            
+            // Auto-select the active season
+            if (season.is_active) {
+                option.selected = true;
+                activeSeasonFound = true;
+            }
+            
             select.appendChild(option);
         });
+        
+        console.log('Loaded seasons for rounds management, active season selected:', activeSeasonFound);
     } catch (error) {
         console.error('Error loading seasons for rounds:', error);
     }
@@ -893,7 +947,7 @@ async function viewRoundDetails(roundId) {
 }
 
 function hideOtherAdminSections(except) {
-    const sections = ['addPlayerSection', 'playersSection', 'editPlayerSection', 'addCourseSection', 'coursesSection', 'courseOverviewSection', 'editCourseSection', 'manageRoundsSection', 'pointsSection'];
+    const sections = ['addPlayerSection', 'playersSection', 'editPlayerSection', 'addCourseSection', 'coursesSection', 'courseOverviewSection', 'editCourseSection', 'manageRoundsSection', 'pointsSection', 'seasonsSection'];
     sections.forEach(sectionId => {
         if (!except.includes(sectionId)) {
             document.getElementById(sectionId).style.display = 'none';
@@ -909,7 +963,8 @@ function resetOtherButtonTexts(except) {
         'showAddCourseButton': 'Add Course',
         'showCoursesButton': 'Show Courses',
         'showRoundsButton': 'Manage Rounds',
-        'showPointsButton': 'Manage Points'
+        'showPointsButton': 'Manage Points',
+        'showSeasonsButton': 'Manage Seasons'
     };
     
     Object.keys(buttons).forEach(buttonId => {
@@ -1016,12 +1071,23 @@ async function loadSeasons() {
         const select = document.getElementById('selectedSeason');
         
         select.innerHTML = '<option value="">Choose a season...</option>';
+        let activeSeasonFound = false;
+        
         seasons.forEach(season => {
             const option = document.createElement('option');
             option.value = season.id;
             option.textContent = season.year + (season.is_active ? ' (Current)' : '');
+            
+            // Auto-select the active season
+            if (season.is_active) {
+                option.selected = true;
+                activeSeasonFound = true;
+            }
+            
             select.appendChild(option);
         });
+        
+        console.log('Loaded seasons for course selection, active season selected:', activeSeasonFound);
     } catch (error) {
         console.error('Error loading seasons:', error);
     }
@@ -1195,7 +1261,6 @@ document.getElementById('matchResultForm').addEventListener('submit', async func
         });
         
         console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
         
         const responseText = await response.text();
         console.log('Raw response:', responseText);
@@ -1214,23 +1279,44 @@ document.getElementById('matchResultForm').addEventListener('submit', async func
         
         if (data.success) {
             console.log('Match result saved successfully:', data);
-            document.getElementById('matchResultMessage').innerHTML = '<p style="color: green;">' + data.message + '</p>';
+            
+            // Hide the match result form since it's now complete
+            document.getElementById('matchResultForm').style.display = 'none';
+            
+            // Show success message with action buttons
+            document.getElementById('matchResultMessage').innerHTML = `
+                <div style="background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 5px; margin-top: 20px;">
+                    <h5 style="margin-top: 0;">Round Completed Successfully!</h5>
+                    <p style="margin-bottom: 15px;">${data.message}</p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button id="viewCompletedRoundButton" class="btn btn-primary" onclick="viewCompletedRound(${roundId})" 
+                                style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 3px; cursor: pointer;">
+                            View Completed Round
+                        </button>
+                        <button id="backToPlayerMenuButton" class="btn btn-secondary" onclick="showPlayerMenu()" 
+                                style="background-color: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 3px; cursor: pointer;">
+                            Back to Player Menu
+                        </button>
+                        <button id="playAnotherRoundButton" class="btn btn-info" onclick="startNewRound()" 
+                                style="background-color: #17a2b8; color: white; border: none; padding: 10px 20px; border-radius: 3px; cursor: pointer;">
+                            Play Another Round
+                        </button>
+                    </div>
+                </div>
+            `;
             
             // Show detailed debug info
             if (data.debug) {
                 console.log('Debug info:', data.debug);
             }
             console.log('Points breakdown:', {
-                oldPoints: data.oldPoints,
+                quota: data.quota,
+                holePoints: data.holePoints,
                 matchPoints: data.matchPoints,
                 roundBonusPoints: data.roundBonusPoints,
-                newTotalPoints: data.newTotalPoints
+                totalPoints: data.totalPoints
             });
             
-            // Return to player menu after a short delay
-            setTimeout(() => {
-                showPlayerMenu();
-            }, 5000);
         } else {
             console.error('Match result save failed:', data.error);
             document.getElementById('matchResultMessage').innerHTML = '<p style="color: red;">Error: ' + data.error + '</p>';
@@ -1240,6 +1326,56 @@ document.getElementById('matchResultForm').addEventListener('submit', async func
         document.getElementById('matchResultMessage').innerHTML = '<p style="color: red;">Network error occurred</p>';
     }
 });
+
+function startNewRound() {
+    // Hide round summary and show course selection
+    document.getElementById('roundSummarySection').style.display = 'none';
+    document.getElementById('courseSelectionSection').style.display = 'block';
+    
+    // Clear course selection data and reload
+    clearCourseSelectionData();
+    loadAvailableCourses();
+    loadSeasons();
+    loadUserHandicap();
+    
+    // Clear current round data
+    currentRound = null;
+}
+
+// Function to view the completed round (reloads the round summary with updated points)
+async function viewCompletedRound(roundId) {
+    try {
+        const response = await fetch(`./getroundsummary.php?roundId=${roundId}`);
+        const text = await response.text();
+        
+        if (response.ok) {
+            // Update the round summary content with the completed round data
+            document.getElementById('roundSummaryContent').innerHTML = text;
+            
+            // Hide the match result form since round is complete
+            document.getElementById('matchResultForm').style.display = 'none';
+            
+            // Add a back button to return to player menu
+            const backButton = document.createElement('button');
+            backButton.textContent = 'Back to Player Menu';
+            backButton.style.cssText = 'margin-bottom: 15px; background-color: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;';
+            backButton.onclick = function() {
+                showPlayerMenu();
+            };
+            
+            const summaryContent = document.getElementById('roundSummaryContent');
+            summaryContent.insertBefore(backButton, summaryContent.firstChild);
+            
+            // Clear the match result message
+            document.getElementById('matchResultMessage').innerHTML = '';
+            
+        } else {
+            alert('Error loading completed round: ' + text);
+        }
+    } catch (error) {
+        alert('An error occurred loading the round: ' + error.message);
+    }
+}
 
 document.getElementById('viewStatsButton').addEventListener('click', function() {
     document.getElementById('seasonStatsSection').style.display = 'block';
@@ -1280,6 +1416,23 @@ document.getElementById('showPointsButton').addEventListener('click', function()
     } else {
         pointsSection.style.display = 'none';
         button.textContent = 'Manage Points';
+    }
+});
+
+// Seasons Button Event Listener
+document.getElementById('showSeasonsButton').addEventListener('click', function() {
+    const seasonsSection = document.getElementById('seasonsSection');
+    const button = document.getElementById('showSeasonsButton');
+    
+    if (seasonsSection.style.display === 'none' || seasonsSection.style.display === '') {
+        seasonsSection.style.display = 'block';
+        hideOtherAdminSections(['seasonsSection']);
+        button.textContent = 'Hide Manage Seasons';
+        resetOtherButtonTexts('showSeasonsButton');
+        loadSeasonsList(); // Load seasons when section is shown
+    } else {
+        seasonsSection.style.display = 'none';
+        button.textContent = 'Manage Seasons';
     }
 });
 
@@ -1362,12 +1515,23 @@ async function loadSeasonsForStats() {
         const select = document.getElementById('statsSeasonSelect');
         
         select.innerHTML = '<option value="">Choose a season...</option>';
+        let activeSeasonFound = false;
+        
         seasons.forEach(season => {
             const option = document.createElement('option');
             option.value = season.id;
             option.textContent = season.year + (season.is_active ? ' (Current)' : '');
+            
+            // Auto-select the active season
+            if (season.is_active) {
+                option.selected = true;
+                activeSeasonFound = true;
+            }
+            
             select.appendChild(option);
         });
+        
+        console.log('Loaded seasons for stats, active season selected:', activeSeasonFound);
     } catch (error) {
         console.error('Error loading seasons for stats:', error);
     }
@@ -1472,7 +1636,11 @@ async function loadPlayerForEdit(username) {
         if (response.ok && result.success) {
             // Populate the edit form
             document.getElementById('editPlayerUsername').value = result.username;
-            document.getElementById('editPlayerPin').value = result.pin;
+            
+            // Pad PIN with leading zeros to ensure 4 digits
+            const paddedPin = result.pin.toString().padStart(4, '0');
+            document.getElementById('editPlayerPin').value = paddedPin;
+            
             document.getElementById('editPlayerHandicap').value = result.handicap;
             document.getElementById('editPlayerIsAdmin').checked = result.isAdmin;
             
@@ -1516,8 +1684,8 @@ document.getElementById('editPlayerForm').addEventListener('submit', async funct
             loadPlayersForEdit();
             
             // Clear the form
-            document.getElementById('editPlayerForm').reset();
-            document.getElementById('editPlayerSection').style.display = 'none';
+             document.getElementById('editPlayerForm').reset();
+            // document.getElementById('editPlayerSection').style.display = 'none';
         } else {
             messageDiv.textContent = 'Error: ' + result;
             messageDiv.style.color = 'red';
@@ -1735,12 +1903,23 @@ async function loadSeasonsForMyRounds() {
         const select = document.getElementById('myRoundsSeasonSelect');
         
         select.innerHTML = '<option value="">Choose a season...</option>';
+        let activeSeasonFound = false;
+        
         seasons.forEach(season => {
             const option = document.createElement('option');
             option.value = season.id;
             option.textContent = season.year + (season.is_active ? ' (Current)' : '');
+            
+            // Auto-select the active season
+            if (season.is_active) {
+                option.selected = true;
+                activeSeasonFound = true;
+            }
+            
             select.appendChild(option);
         });
+        
+        console.log('Loaded seasons for my rounds, active season selected:', activeSeasonFound);
     } catch (error) {
         console.error('Error loading seasons for my rounds:', error);
     }
@@ -1848,6 +2027,118 @@ async function resumeRound(roundId) {
         alert('An error occurred: ' + error.message);
     }
 }
+
+// Season Management Functions
+async function loadSeasonsList() {
+    try {
+        const response = await fetch('./getseasons.php');
+        const seasons = await response.json();
+        
+        if (Array.isArray(seasons)) {
+            let seasonsHtml = '<div class="table-responsive">';
+            seasonsHtml += '<table class="table">';
+            seasonsHtml += '<tr style="background-color: #f2f2f2;">';
+            seasonsHtml += '<th style="border: 1px solid #ddd; padding: 8px;">Year</th>';
+            seasonsHtml += '<th style="border: 1px solid #ddd; padding: 8px;">Status</th>';
+            seasonsHtml += '<th style="border: 1px solid #ddd; padding: 8px;">Actions</th>';
+            seasonsHtml += '</tr>';
+            
+            seasons.forEach(season => {
+                const status = season.is_active ? 'Active' : 'Inactive';
+                const statusColor = season.is_active ? '#28a745' : '#6c757d';
+                
+                seasonsHtml += `<tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${season.year}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; color: ${statusColor}; font-weight: bold;">${status}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">
+                        ${!season.is_active ? 
+                            `<button onclick="activateSeason(${season.id}, ${season.year})" 
+                                style="background-color: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">
+                                Set Active
+                            </button>` : ''
+                        }
+                    </td>
+                </tr>`;
+            });
+            
+            seasonsHtml += '</table>';
+            seasonsHtml += '</div>';
+            
+            if (seasons.length === 0) {
+                seasonsHtml = '<p>No seasons found. Create your first season below.</p>';
+            }
+            
+            document.getElementById('seasonsList').innerHTML = seasonsHtml;
+        } else {
+            document.getElementById('seasonsList').innerHTML = '<p style="color: red;">Error loading seasons.</p>';
+        }
+    } catch (error) {
+        console.error('Error loading seasons:', error);
+        document.getElementById('seasonsList').innerHTML = '<p style="color: red;">Error loading seasons.</p>';
+    }
+}
+
+async function activateSeason(seasonId, year) {
+    try {
+        const response = await fetch('./activateseason.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `seasonId=${seasonId}`
+        });
+        
+        const result = await response.text();
+        
+        if (response.ok) {
+            alert(`${year} season has been activated successfully!`);
+            loadSeasonsList(); // Refresh the list
+        } else {
+            alert('Error activating season: ' + result);
+        }
+    } catch (error) {
+        console.error('Error activating season:', error);
+        alert('Error activating season.');
+    }
+}
+
+// Add Season Form Event Listener
+document.getElementById('addSeasonForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const messageDiv = document.getElementById('addSeasonMessage');
+    
+    try {
+        const response = await fetch('./addseason.php', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.text();
+        
+        if (response.ok) {
+            messageDiv.innerHTML = `<p style="color: green; margin-top: 10px;">${result}</p>`;
+            this.reset();
+            document.getElementById('newSeasonYear').value = new Date().getFullYear() + 1; // Set to next year
+            loadSeasonsList(); // Refresh the list
+        } else {
+            messageDiv.innerHTML = `<p style="color: red; margin-top: 10px;">Error: ${result}</p>`;
+        }
+    } catch (error) {
+        console.error('Error adding season:', error);
+        messageDiv.innerHTML = '<p style="color: red; margin-top: 10px;">Error adding season.</p>';
+    }
+});
+
+// Refresh Seasons Button Event Listener
+document.getElementById('refreshSeasonsButton').addEventListener('click', loadSeasonsList);
+
+// Set default year for new season on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const currentYear = new Date().getFullYear();
+    document.getElementById('newSeasonYear').value = currentYear + 1;
+});
 
 // Check login status when page loads
 window.addEventListener('load', checkLoginStatus);

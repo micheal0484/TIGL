@@ -26,7 +26,8 @@ if ($stmt->execute()) {
         echo json_encode($players);
     } else {
         if ($result->num_rows > 0) {
-            echo '<table class="table table-responsive">';
+            echo '<div class="table-responsive">';
+            echo '<table class="table">';
             echo '<tr style="background-color: #f2f2f2;">
                     <th style="border: 1px solid #ddd; padding: 8px;">Username</th>
                     <th style="border: 1px solid #ddd; padding: 8px;">PIN</th>
@@ -47,6 +48,7 @@ if ($stmt->execute()) {
                       </tr>';
             }
             echo '</table>';
+            echo '</div>'; // Close table-responsive div
         } else {
             echo '<p>No players found.</p>';
         }

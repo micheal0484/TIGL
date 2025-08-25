@@ -92,7 +92,7 @@ try {
     $pointsCalculator = new PointsCalculator($conn);
     $holePoints = $pointsCalculator->calculateHolePoints($score, $par, $penalties, $obStrokes);
     
-    // Update hole score with points
+    // Update hole score with points - ensure decimal storage
     $stmt = $conn->prepare("
         INSERT INTO hole_scores (round_id, hole_number, score, penalties, ob_strokes, points) 
         VALUES (?, ?, ?, ?, ?, ?)
@@ -126,6 +126,9 @@ try {
     $totals = $stmt->get_result()->fetch_assoc();
     $stmt->close();
     
+    // Ensure hole points is always a float
+    $totalHolePoints = floatval($totals['total_hole_points'] ?? 0);
+
     // For incomplete rounds, just store the hole points (no quota yet)
     // Quota will be added when the round is completed with match result
     $stmt = $conn->prepare("
@@ -137,11 +140,11 @@ try {
         WHERE id = ? AND user_id = ?
     ");
 
-    $stmt->bind_param("iiiidi", 
+    $stmt->bind_param("iiidii", 
         $totals['total_score'], 
         $totals['total_penalties'], 
         $totals['total_ob'], 
-        $totals['total_hole_points'], // Just hole points for now
+        $totalHolePoints, // Use the float-converted value
         $roundId, 
         $userId
     );
@@ -150,7 +153,8 @@ try {
     
     echo json_encode([
         'success' => true,
-        'holePoints' => $holePoints,
+        'holePoints' => floatval($holePoints), // Ensure this is also a float
+        'totalHolePoints' => $totalHolePoints, // Include for debugging
         'message' => "Hole $holeNumber saved successfully. Points earned: " . number_format($holePoints, 1)
     ]);
     

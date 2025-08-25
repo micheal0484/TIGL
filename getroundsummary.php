@@ -29,10 +29,10 @@ if ($roundId <= 0) {
 try {
     // Get round details - admins can view any round, players can only view their own
     if ($isAdmin) {
-        // Admin can view any round
+        // Admin can view any round - include both handicaps
         $stmt = $conn->prepare("
-            SELECT r.id, r.total_score, r.total_penalties, r.total_ob, r.points, r.user_id,
-                   c.name as course_name, c.holes, s.year, u.username as player_name, u.handicap
+            SELECT r.id, r.total_score, r.total_penalties, r.total_ob, r.points, r.user_id, r.handicap_used,
+                   c.name as course_name, c.holes, s.year, u.username as player_name, u.handicap as profile_handicap
             FROM rounds r
             JOIN courses c ON r.course_id = c.id
             JOIN seasons s ON r.season_id = s.id
@@ -41,10 +41,10 @@ try {
         ");
         $stmt->bind_param("i", $roundId);
     } else {
-        // Player can only view their own rounds
+        // Player can only view their own rounds - include both handicaps
         $stmt = $conn->prepare("
-            SELECT r.id, r.total_score, r.total_penalties, r.total_ob, r.points, r.user_id,
-                   c.name as course_name, c.holes, s.year, u.username as player_name, u.handicap
+            SELECT r.id, r.total_score, r.total_penalties, r.total_ob, r.points, r.user_id, r.handicap_used,
+                   c.name as course_name, c.holes, s.year, u.username as player_name, u.handicap as profile_handicap
             FROM rounds r
             JOIN courses c ON r.course_id = c.id
             JOIN seasons s ON r.season_id = s.id
@@ -65,8 +65,11 @@ try {
     $round = $roundResult->fetch_assoc();
     $stmt->close();
     
-    // Calculate net score
-    $netScore = $round['total_score'] - $round['handicap'];
+    // Use the round-specific handicap for all calculations
+    $handicapUsed = floatval($round['handicap_used']);
+    
+    // Calculate net score using the handicap that was used for this round
+    $netScore = $round['total_score'] - $handicapUsed;
     
     // Get hole scores with points
     $stmt = $conn->prepare("
@@ -83,15 +86,25 @@ try {
     echo '<div style="margin-bottom: 20px;">';
     echo '<h5>Round Summary</h5>';
     
-    // Show player name if admin is viewing
+    // Show player name and handicap info if admin is viewing
     if ($isAdmin) {
-        echo '<p><strong>Player:</strong> ' . htmlspecialchars($round['player_name']) . ' (Handicap: ' . $round['handicap'] . ')</p>';
+        echo '<p><strong>Player:</strong> ' . htmlspecialchars($round['player_name']) . '</p>';
+        echo '<p><strong>Profile Handicap:</strong> ' . number_format($round['profile_handicap'], 1) . '</p>';
+        echo '<p><strong>Handicap Used for Round:</strong> ' . number_format($handicapUsed, 1) . '</p>';
+    } else {
+        // Show handicap info to player as well
+        if ($handicapUsed != $round['profile_handicap']) {
+            echo '<p><strong>Your Profile Handicap:</strong> ' . number_format($round['profile_handicap'], 1) . '</p>';
+            echo '<p><strong>Handicap Used for This Round:</strong> ' . number_format($handicapUsed, 1) . ' <em>(Adjusted for this round)</em></p>';
+        } else {
+            echo '<p><strong>Handicap Used:</strong> ' . number_format($handicapUsed, 1) . '</p>';
+        }
     }
     
     echo '<p><strong>Course:</strong> ' . htmlspecialchars($round['course_name']) . '</p>';
     echo '<p><strong>Season:</strong> ' . $round['year'] . '</p>';
     echo '<p><strong>Total Score:</strong> ' . $round['total_score'] . '</p>';
-    echo '<p><strong>Net Score:</strong> ' . $netScore . ' (Total - Handicap)</p>';
+    echo '<p><strong>Net Score:</strong> ' . $netScore . ' (Total - Handicap ' . number_format($handicapUsed, 1) . ')</p>';
     echo '<p><strong>Total Penalties:</strong> ' . $round['total_penalties'] . '</p>';
     echo '<p><strong>Total OB Strokes:</strong> ' . $round['total_ob'] . '</p>';
     echo '<p style="color: #4CAF50; font-weight: bold; font-size: 18px;"><strong>Total Points:</strong> ' . number_format($round['points'], 1) . '</p>';
@@ -99,7 +112,8 @@ try {
     
     if ($scoresResult->num_rows > 0) {
         echo '<h5>Hole-by-Hole Scores</h5>';
-        echo '<table class="table table-responsive">';
+        echo '<div class="table-responsive">';
+        echo '<table class="table">';
         echo '<tr style="background-color: #f2f2f2;">
                 <th style="border: 1px solid #ddd; padding: 8px;">Hole</th>
                 <th>Par</th>
@@ -131,7 +145,7 @@ try {
         $totalPlusMinus = $round['total_score'] - $totalPar;
         $totalPlusMinusText = $totalPlusMinus > 0 ? '+' . $totalPlusMinus : ($totalPlusMinus < 0 ? $totalPlusMinus : 'E');
         
-        // Calculate net to par
+        // Calculate net to par using the correct handicap
         $netToPar = $netScore - $totalPar;
         $netToParText = $netToPar > 0 ? '+' . $netToPar : ($netToPar < 0 ? $netToPar : 'E');
         
@@ -145,7 +159,7 @@ try {
                 <td class="text-center text-success font-weight-bold">' . number_format($round['points'], 1) . '</td>
               </tr>';
         
-        // Add net score row
+        // Add net score row using the correct handicap
         echo '<tr class="bg-info font-weight-bold text-dark">
                 <td>Net</td>
                 <td>' . $totalPar . '</td>
@@ -165,34 +179,44 @@ try {
         $stmt->close();
 
         if ($matchResult) {
-            // Calculate bonus points using PointsCalculator
+            // Calculate bonus points using PointsCalculator with round-specific handicap
             $pointsCalculator = new PointsCalculator($conn);
-            $quota = $pointsCalculator->getUserQuota($session['user_id']);
-            $matchPoints = $pointsCalculator->getMatchResultPoints($matchResult === 'won');
-            $roundBonusPoints = $pointsCalculator->calculateRoundBonusPoints($round['total_score'], $totalPar);
             
-            // Calculate hole points (total points minus quota and bonuses)
-            $holePoints = $round['points'] - $quota - $matchPoints - $roundBonusPoints;
+            // Get the actual hole points from the database
+            $stmt = $conn->prepare("SELECT SUM(points) as total_hole_points FROM hole_scores WHERE round_id = ?");
+            $stmt->bind_param("i", $roundId);
+            $stmt->execute();
+            $holePointsResult = $stmt->get_result()->fetch_assoc();
+            $holePoints = floatval($holePointsResult['total_hole_points']);
+            $stmt->close();
+            
+            // Get quota using round-specific handicap
+            $quota = $pointsCalculator->getRoundQuota($roundId);
+            $matchPoints = $pointsCalculator->getMatchResultPoints($matchResult === 'won');
+            
+            // Use NET score for round bonus calculation (already calculated above with correct handicap)
+            $roundBonusPoints = $pointsCalculator->calculateRoundBonusPoints($netScore, $totalPar);
 
-            echo '<tr class="bg-light font-weight-bold text-dark">
-                    <td>Points</td>
-                    <td class="font-weight-normal">Quota: ' . number_format($quota, 1) . '</td>
-                    <td class="font-weight-normal">Hole: +' . number_format($holePoints, 1) . '</td>
-                    <td class="font-weight-normal">Match: ' . ($matchPoints >= 0 ? '+' : '') . number_format($matchPoints, 1) . '</td>
-                    <td class="font-weight-normal">Bonus: ' . ($roundBonusPoints >= 0 ? '+' : '') . number_format($roundBonusPoints, 1) . '</td>
-                    <td>-</td>
-                    <td class="text-center text-success font-weight-bold">' . number_format($round['points'], 1) . '</td>
+            echo '<tr style="background-color: #e8f5e9; font-weight: bold; color: #2e7d32; border-top: 3px solid #4CAF50;">
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">Points</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 12px;">Quota: ' . number_format($quota, 1) . '</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 12px;">Hole: +' . number_format($holePoints, 1) . '</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 12px;">Match: ' . ($matchPoints >= 0 ? '+' : '') . number_format($matchPoints, 1) . '</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 12px;">Bonus: ' . ($roundBonusPoints >= 0 ? '+' : '') . number_format($roundBonusPoints, 1) . '</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">-</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #4CAF50; font-weight: bold; font-size: 16px;">' . number_format($round['points'], 1) . '</td>
                   </tr>';
             
-            // Add explanation row
-            echo '<tr class="bg-light font-italic text-muted">
-                    <td colspan="7" class="border-1 p-2 text-center" style="font-size: 11px;">
-                        Points Breakdown: Quota (Handicap - 18) + Hole Performance + Match Result (' . ucfirst($matchResult) . ') + Round Bonus = Total Points
+            // Add explanation row showing the handicap used for this round
+            echo '<tr style="background-color: #f8f9fa; font-style: italic; color: #6c757d;">
+                    <td colspan="7" style="border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 11px;">
+                        Points Breakdown: Quota (Handicap ' . number_format($handicapUsed, 1) . ' - 18) + Hole Performance + Match Result (' . ucfirst($matchResult) . ') + Round Bonus (Net Score ' . $netScore . ' vs Par ' . $totalPar . ') = Total Points
                     </td>
                   </tr>';
         }
 
         echo '</table>';
+        echo '</div>'; // Close table-responsive div
     }
     
 } catch (Exception $e) {

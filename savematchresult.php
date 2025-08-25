@@ -72,23 +72,41 @@ try {
     // Debug logging
     error_log("Round $roundId - Current points: " . $roundData['points'] . ", Total score: " . $roundData['total_score'] . ", Course par: " . $coursePar . ", Match result: " . $matchResult);
     
-    // Calculate total points including quota for this specific round
+    // Get the handicap used for this round
+    $stmt = $conn->prepare("SELECT handicap_used FROM rounds WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $roundId, $userId);
+    $stmt->execute();
+    $handicapResult = $stmt->get_result();
+
+    if ($handicapResult->num_rows === 0) {
+        echo json_encode(['success' => false, 'error' => 'Round not found or handicap not set']);
+        exit();
+    }
+
+    $handicapUsed = $handicapResult->fetch_assoc()['handicap_used'];
+    $stmt->close();
+
+    // Calculate net score
+    $netScore = $roundData['total_score'] - $handicapUsed;
+
+    // Calculate total points including quota
     $pointsCalculator = new PointsCalculator($conn);
     
     // Get current hole points from the round
     $currentHolePoints = floatval($roundData['points']);
     
-    // Calculate total round points with round-specific quota
-    $pointsBreakdown = $pointsCalculator->calculateTotalRoundPointsForRound(
-        $roundId, 
-        $currentHolePoints, 
-        $roundData['total_score'], 
-        $coursePar, 
-        $matchResult
-    );
+    // Calculate quota based on handicap used for this round
+    $quota = $handicapUsed - 18.0;
+    
+    // Calculate round bonus using NET score, not gross score
+    $roundBonusPoints = $pointsCalculator->calculateRoundBonusPoints($netScore, $coursePar);
+    $matchPoints = $pointsCalculator->getMatchResultPoints($matchResult === 'won');
+    
+    // Calculate total points
+    $totalPoints = $quota + $currentHolePoints + $roundBonusPoints + $matchPoints;
     
     // Debug logging
-    error_log("Points breakdown: " . json_encode($pointsBreakdown));
+    error_log("Points calculation: Quota: $quota, Hole: $currentHolePoints, Bonus (net): $roundBonusPoints, Match: $matchPoints, Total: $totalPoints");
     
     // Update round with match result and total points (including quota)
     $stmt = $conn->prepare("
@@ -98,7 +116,7 @@ try {
             is_completed = 1
         WHERE id = ? AND user_id = ?
     ");
-    $stmt->bind_param("sdii", $matchResult, $pointsBreakdown['totalPoints'], $roundId, $userId);
+    $stmt->bind_param("sdii", $matchResult, $totalPoints, $roundId, $userId);
 
     if (!$stmt->execute()) {
         echo json_encode(['success' => false, 'error' => 'Failed to save match result: ' . $stmt->error]);
@@ -109,16 +127,19 @@ try {
     // Return detailed breakdown
     echo json_encode([
         'success' => true,
-        'quota' => $pointsBreakdown['quota'],
-        'holePoints' => $pointsBreakdown['holePoints'],
-        'matchPoints' => $pointsBreakdown['matchPoints'],
-        'roundBonusPoints' => $pointsBreakdown['roundBonusPoints'],
-        'totalPoints' => $pointsBreakdown['totalPoints'],
-        'message' => "Round completed! Quota: " . number_format($pointsBreakdown['quota'], 1) . 
-                     ", Hole Points: +" . number_format($pointsBreakdown['holePoints'], 1) . 
-                     ", Match: " . ($pointsBreakdown['matchPoints'] >= 0 ? "+" : "") . number_format($pointsBreakdown['matchPoints'], 1) . 
-                     ", Round Bonus: " . ($pointsBreakdown['roundBonusPoints'] >= 0 ? "+" : "") . number_format($pointsBreakdown['roundBonusPoints'], 1) . 
-                     " = Total: " . number_format($pointsBreakdown['totalPoints'], 1) . " points"
+        'quota' => $quota,
+        'holePoints' => $currentHolePoints,
+        'matchPoints' => $matchPoints,
+        'roundBonusPoints' => $roundBonusPoints,
+        'totalPoints' => $totalPoints,
+        'grossScore' => $roundData['total_score'],
+        'netScore' => $netScore,
+        'handicapUsed' => $handicapUsed,
+        'message' => "Round completed! Quota: " . number_format($quota, 1) . 
+                     ", Hole Points: +" . number_format($currentHolePoints, 1) . 
+                     ", Match: " . ($matchPoints >= 0 ? "+" : "") . number_format($matchPoints, 1) . 
+                     ", Round Bonus (Net): " . ($roundBonusPoints >= 0 ? "+" : "") . number_format($roundBonusPoints, 1) . 
+                     " = Total: " . number_format($totalPoints, 1) . " points"
     ]);
     
 } catch (Exception $e) {
