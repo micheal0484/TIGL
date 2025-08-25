@@ -1,6 +1,6 @@
-# TIGL - Golf Tournament Management System v1.0
+# TIGL - Golf Management System v1.0
 
-🏌️‍♂️ **TIGL** is a comprehensive, mobile-first golf tournament management system designed for golf leagues and tournaments. Built with PHP, MySQL, and responsive web technologies, it provides complete tournament administration and player management capabilities.
+🏌️‍♂️ **TIGL Points** is a comprehensive, mobile-first golf management system designed for golf leagues and events. Built with PHP, MySQL, and responsive web technologies, it provides complete administration and player management capabilities.
 
 ## 🌟 Features
 
@@ -9,8 +9,8 @@
 - **Secure Authentication**: PIN-based login system with session management
 - **Player Profiles**: Individual handicap tracking and statistics
 
-### 🏌️ **Tournament Management**
-- **Season Management**: Create and manage multiple tournament seasons
+### 🏌️ **Event Management**
+- **Season Management**: Create and manage multiple seasons
 - **Course Management**: Add courses with detailed hole information (par, yardage, handicaps)
 - **Round Management**: Complete round tracking with hole-by-hole scoring
 
@@ -146,13 +146,12 @@ TIGL/
 - Automatic net score calculations
 
 ## 🐛 **Known Issues**
-- Console error from browser extensions (harmless)
 - None reported for core functionality
 
 ## 🚀 **Version History**
 
 ### **v1.0.0** (August 2025)
-- ✅ Complete tournament management system
+- ✅ Complete management system
 - ✅ Mobile-responsive design
 - ✅ Full scoring and handicap system
 - ✅ Season and course management
@@ -177,4 +176,4 @@ This project is licensed under the MIT License. See the LICENSE file for more de
 
 ---
 
-**TIGL v1.0** - Ready for tournament season! 🏆⛳
+**TIGL v1.0** - Ready for Golf season! 🏆⛳
