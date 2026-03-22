@@ -2,6 +2,10 @@
 require_once './config.php';
 require_once './SessionManager.php';
 
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 // Check if user is logged in and is admin
 $sessionManager = new SessionManager($conn);
 $session = $sessionManager->getSession();
@@ -13,24 +17,6 @@ if (!$session) {
 }
 
 if (!$session['isAdmin']) {
-    http_response_code(403);
-    echo "Admin access required.";
-    exit;
-}
-
-header("Cache-Control: no-cache, no-store, must-revalidate");
-header("Pragma: no-cache");
-header("Expires: 0");
-
-// Check if user is logged in and is admin
-$sessionManager = new SessionManager();
-if (!$sessionManager->isLoggedIn()) {
-    http_response_code(401);
-    echo "Unauthorized access. Please log in.";
-    exit;
-}
-
-if (!$sessionManager->isAdmin()) {
     http_response_code(403);
     echo "Admin access required.";
     exit;
