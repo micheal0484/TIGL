@@ -1,0 +1,755 @@
+/* ================================
+   TIGL Modern Golf Theme - 2026
+   Mobile-first, modern design
+   ================================ */
+
+/* CSS Variables for Golf Theme */
+:root {
+  /* Golf Course Color Palette */
+  --golf-green: #2E7D32;
+  --golf-fairway: #4CAF50;
+  --golf-sand: #D4B08A;
+  --golf-sky: #87CEEB;
+  --golf-white: #FAFAFA;
+  --golf-rough: #6B8E23;
+  --golf-flag: #FF6B35;
+  
+  /* Modern UI Colors */
+  --text-primary: #1A1A1A;
+  --text-secondary: #666666;
+  --text-light: #999999;
+  --surface-white: #FFFFFF;
+  --surface-light: #F8F9FA;
+  --surface-medium: #E9ECEF;
+  --shadow-light: rgba(46, 125, 50, 0.08);
+  --shadow-medium: rgba(46, 125, 50, 0.15);
+  --shadow-strong: rgba(46, 125, 50, 0.25);
+  
+  /* Success/Error Colors */
+  --success: #28A745;
+  --warning: #FFC107;
+  --error: #DC3545;
+  --info: #17A2B8;
+  
+  /* Typography */
+  --font-primary: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+  
+  /* Spacing Scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+/* Global Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Base Typography */
+body {
+  font-family: var(--font-primary);
+  background: linear-gradient(135deg, var(--golf-white) 0%, var(--surface-light) 100%);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-weight: var(--font-weight-normal);
+  min-height: 100vh;
+}
+
+/* Modern Header with Golf Theme */
+header {
+  background: linear-gradient(135deg, var(--golf-green) 0%, var(--golf-fairway) 50%, var(--golf-rough) 100%);
+  color: white;
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+  box-shadow: 0 4px 20px var(--shadow-medium);
+  position: relative;
+  overflow: hidden;
+}
+
+header h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: var(--font-weight-light);
+  letter-spacing: 2px;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Compact Welcome Section */
+.welcome-compact {
+  padding: var(--space-md) !important;
+}
+
+.welcome-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.btn-sm {
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 600px) {
+  .welcome-line {
+    flex-direction: column;
+    gap: var(--space-sm);
+    text-align: center;
+  }
+}
+
+/* Card System */
+.card, .panel, .admin-section {
+  background: var(--surface-white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px var(--shadow-light);
+  border: 1px solid rgba(46, 125, 50, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideIn 0.6s ease-out forwards;
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card:hover, .panel:hover {
+  box-shadow: 0 8px 30px var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+/* Panel Show Animation */
+#playerPanel, #adminPanel {
+  display: none; /* Hidden by default */
+}
+
+.panel.show, #playerPanel.show, #adminPanel.show {
+  display: block !important;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Main Content Area */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-md);
+}
+
+/* Sections */
+section {
+  background: var(--surface-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  box-shadow: 0 4px 20px var(--shadow-light);
+  border: 1px solid rgba(46, 125, 50, 0.1);
+}
+
+/* Modern Typography */
+h2, h3, h4, h5, h6 {
+  color: var(--golf-green);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-md);
+  line-height: 1.3;
+}
+
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.125rem; }
+
+/* Modern Form Styles */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+form > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+}
+
+input[type="text"], 
+input[type="tel"], 
+input[type="number"], 
+input[type="password"],
+select, 
+textarea {
+  padding: var(--space-md);
+  border: 2px solid var(--surface-medium);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: var(--surface-white);
+  color: var(--text-primary);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--golf-fairway);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  transform: scale(1.02);
+}
+
+input::placeholder {
+  color: var(--text-light);
+  font-weight: var(--font-weight-normal);
+}
+
+/* Modern Button System */
+button, .btn {
+  background: linear-gradient(135deg, var(--golf-fairway), var(--golf-green));
+  color: white;
+  border: none;
+  padding: var(--space-md) var(--space-xl);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+}
+
+button:active {
+  transform: translateY(-1px);
+}
+
+/* Button Variants */
+.btn-secondary {
+  background: linear-gradient(135deg, var(--text-secondary), #555);
+  box-shadow: 0 4px 15px rgba(102, 102, 102, 0.3);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, var(--warning), #e0a800);
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+  color: var(--text-primary);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--error), #c82333);
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-info {
+  background: linear-gradient(135deg, var(--info), #138496);
+  box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+}
+
+/* Admin Panel Styles */
+#adminPanel {
+  margin: var(--space-xl) auto;
+  max-width: 1200px;
+  padding: var(--space-xl);
+}
+
+.admin-header, .player-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 2px solid var(--surface-medium);
+}
+
+.admin-subtitle, .player-subtitle {
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: var(--space-sm);
+}
+
+.admin-controls, .player-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.admin-controls button, .player-controls button {
+  padding: var(--space-lg);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  text-align: center;
+}
+
+.user-info {
+  background: var(--surface-light);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  margin: var(--space-lg) 0;
+}
+
+.user-info p {
+  margin: var(--space-sm) 0;
+}
+
+.admin-section {
+  margin: var(--space-xl) 0;
+  padding: var(--space-xl);
+}
+
+/* Player Panel */
+#playerPanel {
+  max-width: 900px;
+  margin: var(--space-xl) auto;
+  padding: var(--space-xl);
+}
+
+/* Table Styles */
+.table-responsive {
+  overflow-x: auto;
+  margin: var(--space-md) 0;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 20px var(--shadow-light);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface-white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-width: 600px; /* Ensure table doesn't get too cramped */
+}
+
+th {
+  background: linear-gradient(135deg, var(--golf-green), var(--golf-fairway));
+  color: white;
+  padding: var(--space-lg);
+  text-align: left;
+  font-weight: var(--font-weight-medium);
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+td {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--surface-medium);
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+
+tr:hover {
+  background: rgba(76, 175, 80, 0.05);
+  transition: background-color 0.2s ease;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Table buttons */
+td button {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.75rem;
+  margin: 0 2px;
+  min-width: auto;
+}
+
+/* Message Styles */
+.message, [id$="Message"] {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  margin: var(--space-md) 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.message.success, [id$="Message"]:has(p[style*="green"]) {
+  background: rgba(40, 167, 69, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.message.error, [id$="Message"]:has(p[style*="red"]) {
+  background: rgba(220, 53, 69, 0.1);
+  color: var(--error);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+/* Golf-themed Loading Animation */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(76, 175, 80, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--golf-fairway);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Score Display */
+.score-display {
+  background: linear-gradient(135deg, var(--golf-sky), #5DADE2);
+  color: white;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-weight: var(--font-weight-bold);
+  margin: var(--space-md) 0;
+}
+
+/* Hole Information */
+.hole-info {
+  background: linear-gradient(135deg, var(--golf-sand), #E6C78A);
+  color: var(--text-primary);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  margin: var(--space-md) 0;
+}
+
+/* Points Display */
+.points-display {
+  background: linear-gradient(135deg, var(--golf-flag), #FF8C5C);
+  color: white;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-xl);
+  display: inline-block;
+  font-weight: var(--font-weight-bold);
+  font-size: 0.875rem;
+}
+
+/* Season Summary Styling */
+div[style*="background-color: #f8f9fa"] {
+  background: linear-gradient(135deg, var(--surface-light), var(--surface-white)) !important;
+  border: 1px solid var(--surface-medium) !important;
+  box-shadow: 0 2px 8px var(--shadow-light) !important;
+}
+
+div[style*="background-color: #f8f9fa"] h6 {
+  color: var(--golf-green) !important;
+  font-weight: var(--font-weight-medium) !important;
+  margin-bottom: var(--space-md) !important;
+}
+
+div[style*="background-color: #f8f9fa"] div {
+  color: var(--text-primary) !important;
+}
+
+div[style*="background-color: #f8f9fa"] strong {
+  color: var(--golf-green) !important;
+}
+
+/* Fix grey text contrast */
+p[style*="color: #6c757d"] {
+  color: var(--text-secondary) !important;
+}
+
+/* General contrast improvements for inline styles */
+[style*="color: #6c757d"],
+[style*="color: #999"],
+[style*="color: #aaa"],
+[style*="color: #ccc"] {
+  color: var(--text-secondary) !important;
+}
+
+/* Ensure good contrast for summary sections */
+.summary-stats, 
+div[style*="display: grid"] div {
+  color: var(--text-primary) !important;
+  line-height: 1.5 !important;
+}
+
+/* Better styling for summary containers */
+div[style*="margin-top: 20px"][style*="padding: 15px"] {
+  background: linear-gradient(135deg, var(--surface-light), #f0f8f0) !important;
+  border-left: 4px solid var(--golf-fairway) !important;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+  :root {
+    --space-xl: 1.5rem;
+    --space-lg: 1rem;
+  }
+  
+  header {
+    padding: var(--space-lg) var(--space-md);
+  }
+  
+  main {
+    padding: var(--space-md);
+  }
+  
+  section {
+    padding: var(--space-lg);
+  }
+  
+  .admin-controls, .player-controls {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Mobile-friendly table */
+  .table-responsive {
+    margin: var(--space-md) -var(--space-md);
+    border-radius: 0;
+  }
+  
+  table {
+    min-width: 100%;
+    font-size: 0.8rem;
+  }
+  
+  th, td {
+    padding: var(--space-sm);
+  }
+  
+  /* Stack table cells on very small screens */
+  @media (max-width: 600px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    
+    thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+    
+    tr {
+      background: var(--surface-white);
+      border: 1px solid var(--surface-medium);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+    }
+    
+    td {
+      border: none;
+      position: relative;
+      padding-left: 35%;
+      padding-bottom: var(--space-sm);
+    }
+    
+    td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 6px;
+      width: 30%;
+      padding-right: 10px;
+      white-space: nowrap;
+      font-weight: var(--font-weight-medium);
+      color: var(--golf-green);
+      font-size: 0.75rem;
+    }
+  }
+  
+  /* Better mobile form spacing */
+  form > div {
+    gap: var(--space-sm);
+  }
+  
+  input, select, textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+}
+
+/* Ultra-small screens */
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.75rem;
+    letter-spacing: 1px;
+  }
+  
+  button, .btn {
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 0.875rem;
+  }
+  
+  .admin-controls button {
+    padding: var(--space-md);
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --shadow-light: rgba(0, 0, 0, 0.3);
+    --shadow-medium: rgba(0, 0, 0, 0.5);
+    --shadow-strong: rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* Dark mode friendly (future enhancement) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-primary: #E0E0E0;
+    --text-secondary: #B0B0B0;
+    --surface-white: #2C2C2C;
+    --surface-light: #1E1E1E;
+    --surface-medium: #404040;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  
+  header {
+    background: white;
+    color: black;
+    box-shadow: none;
+  }
+  
+  .card, .panel, .admin-section {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  button {
+    display: none;
+  }
+  
+  .golf-footer {
+    display: none;
+  }
+}
+
+/* Modern Golf Footer */
+.golf-footer {
+  background: linear-gradient(135deg, var(--golf-green) 0%, var(--golf-rough) 50%, var(--golf-fairway) 100%);
+  color: white;
+  margin-top: var(--space-2xl);
+  padding: var(--space-2xl) var(--space-md) var(--space-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-xl);
+}
+
+.footer-section h4 {
+  color: white;
+  margin-bottom: var(--space-md);
+  font-weight: var(--font-weight-medium);
+}
+
+.footer-section p {
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section li {
+  padding: var(--space-xs) 0;
+  opacity: 0.9;
+}
+
+.footer-section li::before {
+  content: '• ';
+  color: var(--golf-sand);
+  font-weight: bold;
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: var(--space-xl) auto 0;
+  padding-top: var(--space-lg);
+  border-top: 1px solid rgba(255,255,255,0.3);
+  text-align: center;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .golf-footer {
+    padding: var(--space-xl) var(--space-md) var(--space-md);
+  }
+  
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+}
