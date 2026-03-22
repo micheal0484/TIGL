@@ -110,6 +110,9 @@ try {
             // Show resume button for incomplete rounds
             if (!$round['is_completed']) {
                 echo '<button onclick="resumeRound(' . $round['id'] . ')" style="background-color: #28a745; color: white; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 12px; margin-left: 3px;">Resume</button>';
+            } else {
+                // Show edit button for completed rounds
+                echo '<button onclick="editCompletedRound(' . $round['id'] . ')" style="background-color: #ffc107; color: black; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 12px; margin-left: 3px;">Edit</button>';
             }
             
             echo '</td>

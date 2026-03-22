@@ -2,37 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIGL Points</title>
-    <link rel="stylesheet" href="styles/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#2E7D32">
+    <meta name="description" content="TIGL Points - Modern golf league management system">
+    <title>TIGL Points - Golf League Management</title>
+    <link rel="stylesheet" href="styles/modern-golf.css">
+    <!-- Preload critical fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 </head>
 <body>
     <header>
-        <h1>Welcome to TIGL Points</h1>
+        <h1>TIGL Points</h1>
     </header>
     
     <main>
-        <section>
-            <h2>Login</h2>
-            <div id="loginSection">
+        <section id="loginSection">
+            <div class="card">
+                <h2>Player Login</h2>
                 <form id="loginForm">
                     <div>
-                        <label for="pin">PIN:</label>
-                        <input type="tel" id="pin" name="pin" required inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="Enter 4-digit PIN">
+                        <label for="pin">Enter your 4-digit PIN</label>
+                        <input type="tel" id="pin" name="pin" required 
+                               inputmode="numeric" 
+                               pattern="[0-9]{4}" 
+                               maxlength="4" 
+                               placeholder="Enter PIN"
+                               autocomplete="off">
                     </div>
-                    <button type="submit">Login</button>
+                    <button type="submit" class="btn">Login to TIGL</button>
                 </form>
             </div>
-            <div id="logoutSection" style="display: none;">
-                <p>Logged in as: <span id="username"></span> (<span id="userType"></span>)</p>
-                <button id="logoutButton">Logout</button>
+        </section>
+        
+        <section id="logoutSection" style="display: none;">
+            <div class="card welcome-compact">
+                <div class="welcome-line">
+                    <span>Welcome back, <strong id="username"></strong> (<span id="userType"></span>)</span>
+                    <button id="logoutButton" class="btn btn-secondary btn-sm">Logout</button>
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- Admin Panel (outside main) -->
-    <div id="adminPanel" class="panel card">
-        <h3>Admin Panel</h3>
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="panel" style="display: none;">
+        <div class="admin-header">
+            <h3>Admin Control Center</h3>
+            <p class="admin-subtitle">Manage players, courses, and tournament settings</p>
+        </div>
+        
         <!-- Admin Control Buttons -->
         <div class="admin-controls">
             <button id="showAddPlayerButton">Add Player</button>
@@ -324,13 +342,17 @@
         </div>
     </div>
 
-    <!-- Player Panel (outside main, same level as admin panel) -->
-    <div id="playerPanel" class="panel card">
-        <h3>Player Options</h3>
+    <!-- Player Panel -->
+    <div id="playerPanel" class="panel" style="display: none;">
+        <div class="player-header">
+            <h3>Player Dashboard</h3>
+            <p class="player-subtitle">Start your round, view stats, and track progress</p>
+        </div>
+        
         <div class="player-controls">
-            <button id="playRoundButton">Play a Round</button>
-            <button id="viewStatsButton">View Season Stats</button>
-            <button id="myRoundsButton">My Rounds</button>
+            <button id="playRoundButton" class="btn">Play a Round</button>
+            <button id="viewStatsButton" class="btn btn-info">View Season Stats</button>
+            <button id="myRoundsButton" class="btn btn-secondary">My Rounds</button>
         </div>
         
         <!-- Course Selection Section -->
@@ -471,11 +493,33 @@
             </div>
             <div id="myRoundsContent"></div>
         </div>
-    </div>
 
-    <footer>
-        <p>&copy; 2023 TIGL. All rights reserved.</p>
-    </footer>
+        <!-- Round Editing Section -->
+        <div id="roundEditingSection" class="player-section" style="display: none;">
+            <h4>Edit Round</h4>
+            <button id="backToMyRoundsFromEdit" style="margin-bottom: 15px; background-color: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;">Back to My Rounds</button>
+            
+            <div id="editRoundInfo" style="margin-bottom: 20px; padding: 15px; background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px;">
+                <h5 style="margin-top: 0; color: #856404;">⚠️ Editing Completed Round</h5>
+                <p style="margin-bottom: 0;">You are editing a completed round. Changes will recalculate your total score and points. You'll need to submit a new match result when finished.</p>
+            </div>
+
+            <div id="editRoundDetails" style="margin-bottom: 20px;">
+                <!-- Round details will be populated here -->
+            </div>
+
+            <div id="editHolesContainer">
+                <!-- Editable hole scores will be populated here -->
+            </div>
+
+            <div id="editRoundActions" style="margin-top: 20px; text-align: center;">
+                <button id="saveRoundEditsButton" style="background-color: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 3px; cursor: pointer; margin-right: 10px;">Save Changes</button>
+                <button id="cancelRoundEditsButton" style="background-color: #6c757d; color: white; border: none; padding: 12px 30px; border-radius: 3px; cursor: pointer;">Cancel</button>
+            </div>
+            
+            <div id="editRoundMessage" style="margin-top: 15px;"></div>
+        </div>
+    </div>
 
     <script>
     async function checkLoginStatus() {
@@ -1231,6 +1275,8 @@ async function loadRoundSummary(roundId) {
         const text = await response.text();
         
         if (response.ok) {
+            // Show the match result form since round is complete
+            document.getElementById('matchResultForm').style.display = 'block';
             document.getElementById('holePlayingSection').style.display = 'none';
             document.getElementById('roundSummarySection').style.display = 'block';
             document.getElementById('roundSummaryContent').innerHTML = text;
@@ -1245,9 +1291,19 @@ async function loadRoundSummary(roundId) {
 document.getElementById('matchResultForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
+    console.log('=== MATCH RESULT FORM SUBMISSION DEBUG ===');
+    
     const formData = new FormData(this);
     const roundId = document.getElementById('summaryRoundId').value;
     formData.append('roundId', roundId);
+    
+    console.log('Form submission data:');
+    console.log('- roundId:', roundId);
+    console.log('- matchResult:', formData.get('matchResult'));
+    console.log('- form elements:', {
+        summaryRoundId: document.getElementById('summaryRoundId'),
+        matchResultRadios: document.querySelectorAll('input[name="matchResult"]')
+    });
     
     console.log('Submitting match result:', {
         roundId: roundId,
@@ -1255,19 +1311,21 @@ document.getElementById('matchResultForm').addEventListener('submit', async func
     });
     
     try {
+        console.log('Submitting to savematchresult.php...');
         const response = await fetch('./savematchresult.php', {
             method: 'POST',
             body: formData
         });
         
-        console.log('Response status:', response.status);
+        console.log('Match result response status:', response.status);
         
         const responseText = await response.text();
-        console.log('Raw response:', responseText);
+        console.log('Match result raw response:', responseText);
         
         let data;
         try {
             data = JSON.parse(responseText);
+            console.log('Match result parsed response:', data);
         } catch (parseError) {
             console.error('JSON parse error:', parseError);
             console.error('Response was:', responseText);
@@ -1275,10 +1333,16 @@ document.getElementById('matchResultForm').addEventListener('submit', async func
             return;
         }
         
-        console.log('Parsed response:', data);
-        
         if (data.success) {
-            console.log('Match result saved successfully:', data);
+            console.log('Match result saved successfully!');
+            console.log('Match result data breakdown:', {
+                quota: data.quota,
+                holePoints: data.holePoints,
+                matchPoints: data.matchPoints,
+                roundBonusPoints: data.roundBonusPoints,
+                totalPoints: data.totalPoints,
+                message: data.message
+            });
             
             // Hide the match result form since it's now complete
             document.getElementById('matchResultForm').style.display = 'none';
@@ -1318,13 +1382,16 @@ document.getElementById('matchResultForm').addEventListener('submit', async func
             });
             
         } else {
-            console.error('Match result save failed:', data.error);
+            console.error('Match result save failed:', data);
+            console.error('Error details:', data.error);
             document.getElementById('matchResultMessage').innerHTML = '<p style="color: red;">Error: ' + data.error + '</p>';
         }
     } catch (error) {
-        console.error('Network error saving match result:', error);
+        console.error('Network/Exception error in match result submission:', error);
         document.getElementById('matchResultMessage').innerHTML = '<p style="color: red;">Network error occurred</p>';
     }
+    
+    console.log('=== End MATCH RESULT FORM SUBMISSION DEBUG ===');
 });
 
 function startNewRound() {
@@ -1344,9 +1411,15 @@ function startNewRound() {
 
 // Function to view the completed round (reloads the round summary with updated points)
 async function viewCompletedRound(roundId) {
+    console.log('=== viewCompletedRound DEBUG ===');
+    console.log('Viewing completed round ID:', roundId);
+    
     try {
         const response = await fetch(`./getroundsummary.php?roundId=${roundId}`);
         const text = await response.text();
+        
+        console.log('Completed round response status:', response.status);
+        console.log('Completed round response length:', text.length);
         
         if (response.ok) {
             // Update the round summary content with the completed round data
@@ -1950,31 +2023,46 @@ document.getElementById('loadMyRoundsButton').addEventListener('click', async fu
 
 // Function to view my round details (called from the view buttons) - Fixed version
 async function viewMyRoundDetails(roundId) {
+    console.log('=== viewMyRoundDetails DEBUG ===');
+    console.log('Round ID:', roundId);
+    
     try {
+        console.log('Fetching round summary...');
         const response = await fetch(`./getroundsummary.php?roundId=${roundId}`);
         const text = await response.text();
         
+        console.log('Round summary response status:', response.status);
+        console.log('Round summary response text length:', text.length);
+        
         if (response.ok) {
+            console.log('Round summary HTML snippet (first 500 chars):');
+            console.log(text.substring(0, 500));
+            console.log('Looking for "Match Result" in HTML...');
+            console.log('Contains "Match Result":', text.includes('Match Result'));
+            console.log('Contains "Won":', text.includes('Won'));
+            console.log('Contains "Lost":', text.includes('Lost'));
+            
             // Hide the my rounds section and show the content in a dedicated area
             document.getElementById('myRoundsSection').style.display = 'none';
             document.getElementById('roundSummarySection').style.display = 'block';
             document.getElementById('roundSummaryContent').innerHTML = text;
             
+            console.log('Fetching round status...');
             // Check if round is completed by making a separate API call to get round status
             const statusResponse = await fetch(`./getroundstatus.php?roundId=${roundId}`);
             const statusData = await statusResponse.json();
             
+            console.log('Round status response:', statusData);
+            
+            // In view mode, always hide the match result form - this is read-only
             const matchForm = document.getElementById('matchResultForm');
+            console.log('Match form element found:', !!matchForm);
+            console.log('viewMyRoundDetails: Hiding match result form (view mode is read-only)');
+            
             if (matchForm) {
-                if (statusData.success && statusData.isCompleted && statusData.hasMatchResult) {
-                    // Round is fully completed with match result - hide the form
-                    matchForm.style.display = 'none';
-                } else {
-                    // Round needs match result - show the form
-                    matchForm.style.display = 'block';
-                    // Set the round ID for the form
-                    document.getElementById('summaryRoundId').value = roundId;
-                }
+                matchForm.style.display = 'none';
+            } else {
+                console.error('matchResultForm element not found!');
             }
             
             // Add a back button to return to my rounds
@@ -1988,6 +2076,36 @@ async function viewMyRoundDetails(roundId) {
             
             const summaryContent = document.getElementById('roundSummaryContent');
             summaryContent.insertBefore(backButton, summaryContent.firstChild);
+            
+            // Debug: Inspect the loaded HTML for match result information
+            console.log('=== DOM INSPECTION AFTER LOADING ===');
+            console.log('Round summary HTML content length:', summaryContent.innerHTML.length);
+            
+            // Look for match result elements in the DOM
+            const matchResultElements = summaryContent.querySelectorAll('*');
+            console.log('Total elements in summary:', matchResultElements.length);
+            
+            // Search for text containing "Match Result"
+            let matchResultFound = false;
+            matchResultElements.forEach((el, index) => {
+                if (el.textContent && el.textContent.includes('Match Result')) {
+                    console.log(`Found "Match Result" in element ${index}:`, el.tagName, el.textContent.trim());
+                    matchResultFound = true;
+                }
+                if (el.textContent && (el.textContent.includes('Won') || el.textContent.includes('Lost'))) {
+                    console.log(`Found Win/Loss in element ${index}:`, el.tagName, el.textContent.trim());
+                }
+            });
+            
+            if (!matchResultFound) {
+                console.log('No "Match Result" text found in loaded HTML');
+            }
+            
+            // Check specific elements that might contain match result
+            const allText = summaryContent.textContent || summaryContent.innerText || '';
+            console.log('All text content includes "Match Result":', allText.includes('Match Result'));
+            console.log('All text content includes "Won":', allText.includes('Won'));
+            console.log('All text content includes "Lost":', allText.includes('Lost'));
             
         } else {
             alert('Error loading round details: ' + text);
@@ -2140,8 +2258,348 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('newSeasonYear').value = currentYear + 1;
 });
 
+// Round Editing Functions
+let currentEditingRound = null;
+
+// Function to edit a completed round - Make it globally accessible
+window.editCompletedRound = async function(roundId) {
+    try {
+        // First, show confirmation dialog
+        const confirmEdit = confirm(
+            'Are you sure you want to edit this completed round?\n\n' +
+            'This will:\n' +
+            '• Reopen the round for editing\n' +
+            '• Clear the current match result\n' +
+            '• Require you to resubmit when finished\n\n' +
+            'Do you want to continue?'
+        );
+        
+        if (!confirmEdit) {
+            return;
+        }
+        
+        // Show loading message
+        document.getElementById('editRoundMessage').innerHTML = '<p style="color: #007bff;">Reopening round for editing...</p>';
+        
+        // Reopen the round
+        const reopenData = new FormData();
+        reopenData.append('roundId', roundId);
+        
+        const reopenResponse = await fetch('./reopenround.php', {
+            method: 'POST',
+            body: reopenData
+        });
+        
+        const reopenResult = await reopenResponse.json();
+        
+        if (!reopenResponse.ok || !reopenResult.success) {
+            alert('Error reopening round: ' + (reopenResult.error || 'Unknown error'));
+            return;
+        }
+        
+        // Now load the editable hole data
+        const response = await fetch(`./geteditableholes.php?roundId=${roundId}`);
+        const result = await response.json();
+        
+        if (!response.ok || !result.success) {
+            alert('Error loading round data: ' + (result.error || 'Unknown error'));
+            return;
+        }
+        
+        // Store the current editing round data
+        currentEditingRound = result;
+        
+        // Hide my rounds section and show editing section
+        document.getElementById('myRoundsSection').style.display = 'none';
+        document.getElementById('roundEditingSection').style.display = 'block';
+        
+        // Populate the editing interface
+        populateRoundEditingInterface(result);
+        
+        // Clear any messages
+        document.getElementById('editRoundMessage').innerHTML = '<p style="color: #28a745;">Round reopened successfully! Make your changes below.</p>';
+        
+    } catch (error) {
+        console.error('Error editing round:', error);
+        alert('An error occurred while preparing to edit the round: ' + error.message);
+    }
+}
+
+// Function to populate the round editing interface
+window.populateRoundEditingInterface = function(roundData) {
+    const { round, holes } = roundData;
+    
+    // Update round details section
+    const detailsDiv = document.getElementById('editRoundDetails');
+    detailsDiv.innerHTML = `
+        <h5>${round.course_name}</h5>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;">
+            <div><strong>Holes:</strong> ${round.total_holes}</div>
+            <div><strong>Handicap Used:</strong> ${round.handicap_used}</div>
+        </div>
+    `;
+    
+    // Create editable hole table
+    const holesContainer = document.getElementById('editHolesContainer');
+    let holesHTML = `
+        <div class="table-responsive">
+            <table class="table" style="margin-bottom: 0;">
+                <thead>
+                    <tr style="background-color: #f2f2f2;">
+                        <th>Hole</th>
+                        <th>Par</th>
+                        <th>Yardage</th>
+                        <th>HCP</th>
+                        <th>Score</th>
+                        <th>Penalties</th>
+                        <th>OB Strokes</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    holes.forEach(hole => {
+        holesHTML += `
+            <tr>
+                <td style="font-weight: bold;">${hole.hole_number}</td>
+                <td>${hole.par}</td>
+                <td>${hole.yardage || '-'}</td>
+                <td>${hole.mens_handicap || '-'}</td>
+                <td>
+                    <select id="score_${hole.hole_number}" data-hole="${hole.hole_number}" class="hole-score-input" 
+                            style="width: 60px; padding: 3px;">
+                        ${generateScoreOptions(hole.par, hole.current_score)}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" id="penalties_${hole.hole_number}" data-hole="${hole.hole_number}" 
+                           class="hole-penalty-input" value="${hole.penalties}" min="0" max="5"
+                           style="width: 60px; padding: 3px;">
+                </td>
+                <td>
+                    <input type="number" id="ob_${hole.hole_number}" data-hole="${hole.hole_number}" 
+                           class="hole-ob-input" value="${hole.ob_strokes}" min="0" max="3"
+                           style="width: 60px; padding: 3px;">
+                </td>
+                <td id="points_${hole.hole_number}" style="font-weight: bold; color: #28a745;">
+                    ${hole.points.toFixed(1)}
+                </td>
+            </tr>
+        `;
+    });
+    
+    holesHTML += `
+                </tbody>
+            </table>
+        </div>
+    `;
+    
+    holesContainer.innerHTML = holesHTML;
+    
+    // Add event listeners for real-time score updates
+    document.querySelectorAll('.hole-score-input, .hole-penalty-input, .hole-ob-input').forEach(input => {
+        input.addEventListener('change', updateHolePointsDisplay);
+    });
+}
+
+// Function to generate score options for a hole
+window.generateScoreOptions = function(par, currentScore) {
+    let options = '';
+    for (let score = 1; score <= par + 5; score++) {
+        const selected = score === currentScore ? 'selected' : '';
+        options += `<option value="${score}" ${selected}>${score}</option>`;
+    }
+    return options;
+}
+
+// Function to update hole points display (for immediate feedback)
+window.updateHolePointsDisplay = async function(event) {
+    const holeNumber = event.target.getAttribute('data-hole');
+    const scoreInput = document.getElementById(`score_${holeNumber}`);
+    const penaltiesInput = document.getElementById(`penalties_${holeNumber}`);
+    const obInput = document.getElementById(`ob_${holeNumber}`);
+    const pointsCell = document.getElementById(`points_${holeNumber}`);
+    
+    // Get the hole par for calculation
+    const hole = currentEditingRound.holes.find(h => h.hole_number == holeNumber);
+    if (!hole) return;
+    
+    const score = parseInt(scoreInput.value);
+    const penalties = parseInt(penaltiesInput.value) || 0;
+    const obStrokes = parseInt(obInput.value) || 0;
+    
+    // Calculate rough points estimate (this is just for display, server will do the real calculation)
+    const scoreToPar = score - hole.par;
+    let points = 0;
+    
+    switch (scoreToPar) {
+        case -3: points = 3.0; break;  // Albatross
+        case -2: points = 2.5; break;  // Eagle  
+        case -1: points = 1.5; break;  // Birdie
+        case 0: points = 1.0; break;   // Par
+        case 1: points = 0.5; break;   // Bogey
+        case 2: points = 0.0; break;   // Double
+        case 3: points = -1.0; break;  // Triple
+        default: points = -2.0; break; // Worse
+    }
+    
+    // Apply penalties
+    points -= (penalties * 0.5);
+    points -= (obStrokes * 2.0);
+    
+    pointsCell.textContent = points.toFixed(1);
+    pointsCell.style.color = points >= 0 ? '#28a745' : '#dc3545';
+}
+
+// Function to save round edits
+window.saveRoundEdits = async function() {
+    try {
+        document.getElementById('editRoundMessage').innerHTML = '<p style="color: #007bff;">Saving changes...</p>';
+        
+        const holes = currentEditingRound.holes;
+        let allSuccess = true;
+        let errorMessage = '';
+        
+        // Save each hole score
+        for (const hole of holes) {
+            const scoreInput = document.getElementById(`score_${hole.hole_number}`);
+            const penaltiesInput = document.getElementById(`penalties_${hole.hole_number}`);
+            const obInput = document.getElementById(`ob_${hole.hole_number}`);
+            
+            const holeData = new FormData();
+            holeData.append('roundId', currentEditingRound.round.id);
+            holeData.append('holeNumber', hole.hole_number);
+            holeData.append('score', scoreInput.value);
+            holeData.append('penalties', penaltiesInput.value || '0');
+            holeData.append('obStrokes', obInput.value || '0');
+            
+            const response = await fetch('./saveholescore.php', {
+                method: 'POST',
+                body: holeData
+            });
+            
+            const result = await response.json();
+            
+            if (!response.ok || !result.success) {
+                allSuccess = false;
+                errorMessage += `Hole ${hole.hole_number}: ${result.error || 'Save failed'}\\n`;
+                break;
+            }
+        }
+        
+        if (allSuccess) {
+            document.getElementById('editRoundMessage').innerHTML = `
+                <div style="background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 5px;">
+                    <h6 style="margin-top: 0;">Changes Saved Successfully!</h6>
+                    <p style="margin-bottom: 10px;">Your hole scores have been updated. The round is now ready for completion.</p>
+                    <button onclick="proceedToCompleteEditedRound()" style="background-color: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 3px; cursor: pointer;">
+                        Complete Round Now
+                    </button>
+                </div>
+            `;
+        } else {
+            document.getElementById('editRoundMessage').innerHTML = `
+                <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; border-radius: 5px;">
+                    <h6 style="margin-top: 0;">Error Saving Changes</h6>
+                    <p style="margin-bottom: 0;">${errorMessage}</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error saving round edits:', error);
+        document.getElementById('editRoundMessage').innerHTML = `
+            <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; border-radius: 5px;">
+                <h6 style="margin-top: 0;">Error</h6>
+                <p style="margin-bottom: 0;">An error occurred while saving: ${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+// Function to proceed to complete the edited round
+window.proceedToCompleteEditedRound = async function() {
+    try {
+        // Load the round summary to allow match result submission
+        const response = await fetch(`./getroundsummary.php?roundId=${currentEditingRound.round.id}`);
+        const text = await response.text();
+        
+        if (response.ok) {
+            // Hide editing section and show round summary
+            document.getElementById('roundEditingSection').style.display = 'none';
+            document.getElementById('roundSummarySection').style.display = 'block';
+            document.getElementById('roundSummaryContent').innerHTML = text;
+            document.getElementById('summaryRoundId').value = currentEditingRound.round.id;
+            
+            // Show the match result form
+            document.getElementById('matchResultForm').style.display = 'block';
+            
+            // Add a back button
+            const backButton = document.createElement('button');
+            backButton.textContent = 'Back to My Rounds';
+            backButton.style.cssText = 'margin-bottom: 15px; background-color: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;';
+            backButton.onclick = function() {
+                document.getElementById('roundSummarySection').style.display = 'none';
+                document.getElementById('myRoundsSection').style.display = 'block';
+                // Refresh the rounds list
+                document.getElementById('loadMyRoundsButton').click();
+            };
+            
+            const summaryContent = document.getElementById('roundSummaryContent');
+            summaryContent.insertBefore(backButton, summaryContent.firstChild);
+        }
+    } catch (error) {
+        alert('Error loading round summary: ' + error.message);
+    }
+}
+
+// Event listeners for round editing
+document.getElementById('backToMyRoundsFromEdit').addEventListener('click', function() {
+    document.getElementById('roundEditingSection').style.display = 'none';
+    document.getElementById('myRoundsSection').style.display = 'block';
+    currentEditingRound = null;
+});
+
+document.getElementById('saveRoundEditsButton').addEventListener('click', saveRoundEdits);
+
+document.getElementById('cancelRoundEditsButton').addEventListener('click', function() {
+    const confirmCancel = confirm('Are you sure you want to cancel? Any unsaved changes will be lost.');
+    if (confirmCancel) {
+        document.getElementById('roundEditingSection').style.display = 'none';
+        document.getElementById('myRoundsSection').style.display = 'block';
+        currentEditingRound = null;
+    }
+});
+
 // Check login status when page loads
 window.addEventListener('load', checkLoginStatus);
     </script>
+
+    <!-- Modern Golf-themed Footer -->
+    <footer class="golf-footer">
+        <!-- <div class="footer-content">
+            <div class="footer-section">
+                <h4>TIGL Points</h4>
+                <p>Modern golf league management for the digital age</p>
+            </div>
+            <div class="footer-section">
+                <h4>Features</h4>
+                <ul>
+                    <li>Real-time scoring</li>
+                    <li>Handicap tracking</li>
+                    <li>Season management</li>
+                    <li>Mobile-friendly</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Access</h4>
+                <p>Optimized for mobile devices<br>
+                Works on any modern browser</p>
+            </div>
+        </div> -->
+        <div class="footer-bottom">
+            <p>&copy; 2026 TIGL Points System</p>
+        </div>
+    </footer>
 </body>
 </html>
