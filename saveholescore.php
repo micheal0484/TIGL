@@ -60,8 +60,8 @@ try {
         exit();
     }
 
-    // Verify round belongs to current user
-    $stmt = $conn->prepare("SELECT course_id FROM rounds WHERE id = ? AND user_id = ?");
+    // Verify round belongs to current user and load scoring context.
+    $stmt = $conn->prepare("SELECT course_id, handicap_used FROM rounds WHERE id = ? AND user_id = ?");
     $stmt->bind_param("ii", $roundId, $userId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -71,11 +71,16 @@ try {
         exit();
     }
     
-    $courseId = $result->fetch_assoc()['course_id'];
+    $roundData = $result->fetch_assoc();
+    $courseId = intval($roundData['course_id']);
+    $handicapUsed = floatval($roundData['handicap_used']);
     $stmt->close();
     
-    // Get hole par for points calculation
-    $stmt = $conn->prepare("SELECT par FROM holes WHERE course_id = ? AND hole_number = ?");
+    // Get hole and course metadata required for net-par scoring.
+    $stmt = $conn->prepare("SELECT h.par, h.mens_handicap, c.holes AS total_holes
+                            FROM holes h
+                            JOIN courses c ON c.id = h.course_id
+                            WHERE h.course_id = ? AND h.hole_number = ?");
     $stmt->bind_param("ii", $courseId, $holeNumber);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -85,12 +90,18 @@ try {
         exit();
     }
     
-    $par = $result->fetch_assoc()['par'];
+    $holeData = $result->fetch_assoc();
+    $par = intval($holeData['par']);
+    $holeHandicapRank = intval($holeData['mens_handicap']);
+    $totalHoles = intval($holeData['total_holes']);
     $stmt->close();
     
     // Calculate points for this hole
     $pointsCalculator = new PointsCalculator($conn);
-    $holePoints = $pointsCalculator->calculateHolePoints($score, $par, $penalties, $obStrokes);
+    $strokesReceived = $pointsCalculator->calculateHoleStrokesReceived($handicapUsed, $totalHoles, $holeHandicapRank);
+    $holeScoring = $pointsCalculator->calculateHolePointsAgainstNetPar($score, $par, $strokesReceived, $penalties, $obStrokes);
+    $holePoints = $holeScoring['points'];
+    error_log("Hole $holeNumber - Score: $score, Par: $par, Handicap Used: $handicapUsed, Total Holes: $totalHoles, Strokes Received: $strokesReceived, Hole Handicap Rank: $holeHandicapRank, Penalties: $penalties, OB Strokes: $obStrokes, Points: $holePoints");
     
     // Update hole score with points - ensure decimal storage
     $stmt = $conn->prepare("
@@ -111,7 +122,7 @@ try {
     }
     $stmt->close();
     
-    // Recalculate total round points (this will now include quota when round is completed)
+    // Recalculate running round totals from saved hole rows.
     $stmt = $conn->prepare("
         SELECT SUM(points) as total_hole_points, 
                SUM(score) as total_score, 
@@ -129,8 +140,7 @@ try {
     // Ensure hole points is always a float
     $totalHolePoints = floatval($totals['total_hole_points'] ?? 0);
 
-    // For incomplete rounds, just store the hole points (no quota yet)
-    // Quota will be added when the round is completed with match result
+    // For incomplete rounds, store running hole points only.
     $stmt = $conn->prepare("
         UPDATE rounds SET 
             total_score = ?, 
@@ -155,7 +165,12 @@ try {
         'success' => true,
         'holePoints' => floatval($holePoints), // Ensure this is also a float
         'totalHolePoints' => $totalHolePoints, // Include for debugging
-        'message' => "Hole $holeNumber saved successfully. Points earned: " . number_format($holePoints, 1)
+        'strokesReceived' => intval($holeScoring['strokesReceived']),
+        'netPar' => intval($holeScoring['netPar']),
+        'scoreToNetPar' => intval($holeScoring['scoreToNetPar']),
+        'message' => "Hole $holeNumber saved successfully. Net par: " . intval($holeScoring['netPar']) .
+                     ", score to net: " . ($holeScoring['scoreToNetPar'] > 0 ? '+' : '') . intval($holeScoring['scoreToNetPar']) .
+                     ", points earned: " . number_format($holePoints, 1)
     ]);
     
 } catch (Exception $e) {

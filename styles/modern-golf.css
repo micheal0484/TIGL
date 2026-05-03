@@ -371,6 +371,124 @@ button:active {
   box-shadow: 0 4px 20px var(--shadow-light);
 }
 
+.mobile-list-filter,
+.mobile-data-list {
+  display: none;
+}
+
+.mobile-data-list {
+  gap: var(--space-sm);
+}
+
+.mobile-data-card {
+  border: 1px solid var(--surface-medium);
+  border-radius: var(--radius-md);
+  background: var(--surface-white);
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.mobile-card-summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  cursor: pointer;
+}
+
+.mobile-card-summary::-webkit-details-marker {
+  display: none;
+}
+
+.mobile-card-summary::after {
+  content: '+';
+  font-weight: var(--font-weight-bold);
+  color: var(--golf-green);
+}
+
+.mobile-data-card[open] .mobile-card-summary::after {
+  content: '-';
+}
+
+.mobile-card-title {
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.mobile-card-badge {
+  background: rgba(46, 125, 50, 0.12);
+  color: var(--golf-green);
+  border: 1px solid rgba(46, 125, 50, 0.25);
+  border-radius: var(--radius-xl);
+  padding: 2px 10px;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.mobile-card-body {
+  border-top: 1px solid var(--surface-medium);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+}
+
+.mobile-data-card:not([open]) .mobile-card-body {
+  display: none;
+}
+
+.mobile-data-card[open] .mobile-card-body {
+  display: block;
+}
+
+.mobile-card-field {
+  display: grid;
+  grid-template-columns: minmax(84px, 40%) 1fr;
+  gap: var(--space-sm);
+  align-items: start;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px dashed var(--surface-medium);
+}
+
+.mobile-card-field:last-child {
+  border-bottom: none;
+}
+
+.mobile-card-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.mobile-card-value {
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.mobile-card-value button {
+  margin: 2px 4px 2px 0;
+}
+
+.mobile-list-filter {
+  margin-bottom: var(--space-sm);
+}
+
+.mobile-list-search {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--surface-medium);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  background: var(--surface-white);
+}
+
+.mobile-list-search:focus {
+  outline: none;
+  border-color: var(--golf-fairway);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -549,6 +667,52 @@ div[style*="margin-top: 20px"][style*="padding: 15px"] {
   
   .admin-controls, .player-controls {
     grid-template-columns: 1fr;
+  }
+
+  #playersSection > button,
+  #coursesSection > button,
+  #seasonsSection #refreshSeasonsButton {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    width: 100%;
+    margin-bottom: var(--space-md) !important;
+  }
+
+  #manageRoundsSection > div:first-of-type,
+  #seasonStatsSection > div,
+  #myRoundsSection > div {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--surface-white);
+    padding: var(--space-sm);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-md) !important;
+    box-shadow: 0 2px 8px var(--shadow-light);
+  }
+
+  #manageRoundsSection > div:first-of-type select,
+  #seasonStatsSection > div select,
+  #myRoundsSection > div select {
+    width: 100%;
+    margin: var(--space-sm) 0 !important;
+  }
+
+  #manageRoundsSection > div:first-of-type button,
+  #seasonStatsSection > div button,
+  #myRoundsSection > div button {
+    width: 100%;
+    margin: 0 !important;
+  }
+
+  .mobile-list-filter,
+  .mobile-data-list {
+    display: grid;
+  }
+
+  .mobile-source-table.is-mobile-converted {
+    display: none !important;
   }
   
   /* Mobile-friendly table */

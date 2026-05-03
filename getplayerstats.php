@@ -38,6 +38,7 @@ try {
     $season = $seasonResult->fetch_assoc();
     $stmt->close();
     
+    //Start outputting player stats for this season div
     echo '<h5>Your ' . $season['year'] . ' Season Statistics</h5>';
     
     // Get player's rounds for this season including points
@@ -178,12 +179,12 @@ try {
         echo '<p><strong>Worst Score:</strong> ' . $worstScore . '</p>';
         echo '</div>';
         
-        echo '<div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; border-left: 4px solid #4CAF50;">';
-        echo '<h6 style="margin-top: 0; color: #4CAF50;">Points Performance</h6>';
-        echo '<p><strong>Total Points:</strong> <span style="color: #4CAF50; font-weight: bold;">' . number_format($totalPoints, 1) . '</span></p>';
-        echo '<p><strong>Average Points:</strong> <span style="color: #4CAF50; font-weight: bold;">' . number_format($avgPoints, 1) . '</span></p>';
-        echo '<p><strong>Best Round:</strong> <span style="color: #4CAF50; font-weight: bold;">' . number_format($bestPoints, 1) . '</span></p>';
-        echo '<p><strong>Worst Round:</strong> <span style="color: ' . ($worstPoints < 0 ? '#f44336' : '#4CAF50') . '; font-weight: bold;">' . number_format($worstPoints, 1) . '</span></p>';
+        echo '<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px;">';
+        echo '<h6 style="margin-top: 0;">Points Performance</h6>';
+        echo '<p><strong>Total Points:</strong> ' . number_format($totalPoints, 1) . '</p>';
+        echo '<p><strong>Average Points:</strong> ' . number_format($avgPoints, 1) . '</p>';
+        echo '<p><strong>Best Round:</strong> ' . number_format($bestPoints, 1) . '</p>';
+        echo '<p><strong>Worst Round:</strong> ' . number_format($worstPoints, 1) . '</p>';
         echo '</div>';
         
         echo '<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px;">';
