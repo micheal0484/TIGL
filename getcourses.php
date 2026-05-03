@@ -40,10 +40,10 @@ try {
                 $status = $isComplete ? 'Complete' : 'Incomplete (' . $row['holes_added'] . '/' . $row['holes'] . ')';
                 
                 if ($isComplete) {
-                    $action = '<button onclick="viewCourse(' . $row['id'] . ', \'' . htmlspecialchars($row['name'], ENT_QUOTES) . '\')" style="background-color: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">View Course</button>';
-                    $action .= '<button onclick="editCourse(' . $row['id'] . ', \'' . htmlspecialchars($row['name'], ENT_QUOTES) . '\', ' . $row['holes'] . ')" style="background-color: #ffc107; color: black; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Edit Course</button>';
+                    $action = '<button data-action="view-course" data-course-id="' . $row['id'] . '" data-course-name="' . htmlspecialchars($row['name'], ENT_QUOTES) . '" style="background-color: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">View Course</button>';
+                    $action .= '<button data-action="edit-course" data-course-id="' . $row['id'] . '" data-course-name="' . htmlspecialchars($row['name'], ENT_QUOTES) . '" data-course-holes="' . $row['holes'] . '" style="background-color: #ffc107; color: black; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Edit Course</button>';
                 } else {
-                    $action = '<button onclick="completeHoles(' . $row['id'] . ', ' . $row['holes'] . ')" style="background-color: #007cba; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Complete Holes</button>';
+                    $action = '<button data-action="complete-holes" data-course-id="' . $row['id'] . '" data-course-name="' . htmlspecialchars($row['name'], ENT_QUOTES) . '" data-course-holes="' . $row['holes'] . '" style="background-color: #007cba; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Complete Holes</button>';
                 }
                 
                 echo '<tr>

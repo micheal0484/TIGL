@@ -447,14 +447,15 @@
             <h4>Round Summary</h4>
             <div id="roundSummaryContent"></div>
             <div style="margin-top: 20px;">
-                <h5>Match Result</h5>
+                
                 <form id="matchResultForm">
+                    <h5>Match Result</h5>
                     <input type="hidden" id="summaryRoundId" name="roundId">
                     <div style="margin-bottom: 15px;">
                         <label>
                             <input type="radio" name="matchResult" value="won" required> Won
                         </label>
-                        <label style="margin-left: 20px;">
+                        <label>
                             <input type="radio" name="matchResult" value="lost" required> Lost
                         </label>
                     </div>
@@ -700,6 +701,291 @@ async function checkSession() {
     }
 }
 
+window.TIGL_DEBUG = window.TIGL_DEBUG ?? true;
+
+function isDebugEnabled() {
+    return window.TIGL_DEBUG === true;
+}
+
+function debugLog(scope, message, meta) {
+    if (!isDebugEnabled()) {
+        return;
+    }
+
+    const prefix = `[TIGL][${new Date().toISOString()}][${scope}] ${message}`;
+    if (typeof meta !== 'undefined') {
+        console.log(prefix, meta);
+    } else {
+        console.log(prefix);
+    }
+}
+
+function debugWarn(scope, message, meta) {
+    if (!isDebugEnabled()) {
+        return;
+    }
+
+    const prefix = `[TIGL][${new Date().toISOString()}][${scope}] ${message}`;
+    if (typeof meta !== 'undefined') {
+        console.warn(prefix, meta);
+    } else {
+        console.warn(prefix);
+    }
+}
+
+const MOBILE_DATA_CONTAINER_IDS = [
+    'playersList',
+    'coursesList',
+    'roundsList',
+    'seasonsList',
+    'myRoundsContent',
+    'playerStatsContent',
+    'courseOverviewContent',
+    'roundSummaryContent',
+    'editHolesContainer'
+];
+
+let mobileEnhancementInProgress = false;
+let mobileEnhancementObserversInitialized = false;
+let mobileResizeTimer = null;
+const mobileEnhancementObservers = [];
+
+function isMobileViewport() {
+    return window.matchMedia('(max-width: 768px)').matches;
+}
+
+function getTableHeaders(table) {
+    let headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+
+    if (!headers.length) {
+        const firstRowHeaders = table.querySelector('tr');
+        if (firstRowHeaders) {
+            headers = Array.from(firstRowHeaders.querySelectorAll('th')).map(th => th.textContent.trim());
+        }
+    }
+
+    return headers;
+}
+
+function getTableDataRows(table) {
+    return Array.from(table.querySelectorAll('tr')).filter(row => row.querySelectorAll('td').length > 0);
+}
+
+function setMobileDataLabels(table, headers) {
+    const dataRows = getTableDataRows(table);
+
+    dataRows.forEach(row => {
+        const cells = Array.from(row.querySelectorAll('td'));
+        cells.forEach((cell, index) => {
+            cell.setAttribute('data-label', headers[index] || `Field ${index + 1}`);
+        });
+    });
+}
+
+function createMobileCardFromRow(cells, headers, rowIndex) {
+    const card = document.createElement('details');
+    card.className = 'mobile-data-card';
+    card.open = rowIndex === 0;
+    card.addEventListener('toggle', function() {
+        const titleText = card.querySelector('.mobile-card-title')?.textContent?.trim() || 'Unknown';
+        debugLog('MobileCards', 'Card native toggle event', {
+            title: titleText,
+            isOpen: card.open
+        });
+    });
+
+    const summary = document.createElement('summary');
+    summary.className = 'mobile-card-summary';
+
+    const title = document.createElement('span');
+    title.className = 'mobile-card-title';
+    title.textContent = (cells[0] && cells[0].textContent.trim()) || `Item ${rowIndex + 1}`;
+
+    const badge = document.createElement('span');
+    badge.className = 'mobile-card-badge';
+    badge.style.display = 'none';
+
+    const statusIndex = headers.findIndex(header => /status|type|result/i.test(header));
+    if (statusIndex !== -1 && cells[statusIndex]) {
+        const statusText = cells[statusIndex].textContent.trim();
+        if (statusText) {
+            badge.textContent = statusText;
+            badge.style.display = 'inline-flex';
+        }
+    }
+
+    summary.appendChild(title);
+    summary.appendChild(badge);
+    card.appendChild(summary);
+
+    const body = document.createElement('div');
+    body.className = 'mobile-card-body';
+
+    cells.forEach((cell, index) => {
+        const field = document.createElement('div');
+        field.className = 'mobile-card-field';
+
+        const label = document.createElement('span');
+        label.className = 'mobile-card-label';
+        label.textContent = headers[index] || `Field ${index + 1}`;
+
+        const value = document.createElement('span');
+        value.className = 'mobile-card-value';
+        value.innerHTML = cell.innerHTML;
+
+        field.appendChild(label);
+        field.appendChild(value);
+        body.appendChild(field);
+    });
+
+    card.appendChild(body);
+    return card;
+}
+
+function addMobileListFilter(container) {
+    const hasCards = container.querySelector('.mobile-data-card');
+    if (!hasCards) {
+        return;
+    }
+
+    const filter = document.createElement('div');
+    filter.className = 'mobile-list-filter';
+
+    const input = document.createElement('input');
+    input.type = 'search';
+    input.className = 'mobile-list-search';
+    input.placeholder = 'Search this list';
+    input.setAttribute('aria-label', 'Search list');
+
+    input.addEventListener('input', function() {
+        const query = input.value.trim().toLowerCase();
+        const cards = container.querySelectorAll('.mobile-data-card');
+
+        cards.forEach(card => {
+            const cardText = card.textContent.toLowerCase();
+            card.style.display = cardText.includes(query) ? '' : 'none';
+        });
+    });
+
+    filter.appendChild(input);
+    container.insertBefore(filter, container.firstChild);
+}
+
+function enhanceContainerForMobile(container) {
+    if (!container) {
+        debugWarn('MobileCards', 'Container missing while enhancing');
+        return;
+    }
+
+    container.querySelectorAll('.mobile-data-list, .mobile-list-filter').forEach(node => node.remove());
+
+    const tables = Array.from(container.querySelectorAll('table'));
+    if (!tables.length) {
+        return;
+    }
+
+    const mobileMode = isMobileViewport();
+
+    tables.forEach((table, tableIndex) => {
+        const headers = getTableHeaders(table);
+        const rows = getTableDataRows(table);
+
+        setMobileDataLabels(table, headers);
+
+        table.classList.add('mobile-source-table');
+        table.classList.toggle('is-mobile-converted', mobileMode);
+
+        if (!mobileMode || !rows.length) {
+            return;
+        }
+
+        const cardList = document.createElement('div');
+        cardList.className = 'mobile-data-list';
+        cardList.setAttribute('data-table-index', String(tableIndex));
+
+        rows.forEach((row, rowIndex) => {
+            const cells = Array.from(row.querySelectorAll('td'));
+            const card = createMobileCardFromRow(cells, headers, rowIndex);
+            cardList.appendChild(card);
+        });
+
+        table.insertAdjacentElement('afterend', cardList);
+
+        const cardCount = cardList.querySelectorAll('.mobile-data-card').length;
+        if (cardCount !== rows.length) {
+            debugWarn('MobileCards', 'Card conversion count mismatch', {
+                containerId: container.id,
+                tableIndex,
+                rowCount: rows.length,
+                cardCount
+            });
+        }
+    });
+
+    if (mobileMode) {
+        addMobileListFilter(container);
+    }
+}
+
+function applyMobileDataEnhancements() {
+    if (mobileEnhancementInProgress) {
+        return;
+    }
+
+    mobileEnhancementInProgress = true;
+
+    try {
+        mobileEnhancementObservers.forEach(({ observer }) => observer.disconnect());
+
+        MOBILE_DATA_CONTAINER_IDS.forEach(containerId => {
+            const container = document.getElementById(containerId);
+            enhanceContainerForMobile(container);
+        });
+    } finally {
+        mobileEnhancementObservers.forEach(({ observer, container }) => {
+            if (container && container.isConnected) {
+                observer.observe(container, { childList: true, subtree: true });
+            }
+        });
+        mobileEnhancementInProgress = false;
+    }
+}
+
+function setupMobileDataEnhancementObservers() {
+    if (mobileEnhancementObserversInitialized) {
+        return;
+    }
+
+    MOBILE_DATA_CONTAINER_IDS.forEach(containerId => {
+        const container = document.getElementById(containerId);
+        if (!container) {
+            return;
+        }
+
+        const observer = new MutationObserver(() => {
+            if (!mobileEnhancementInProgress) {
+                window.requestAnimationFrame(applyMobileDataEnhancements);
+            }
+        });
+
+        observer.observe(container, { childList: true, subtree: true });
+        mobileEnhancementObservers.push({ observer, container });
+    });
+
+    mobileEnhancementObserversInitialized = true;
+}
+
+function setupMobileResizeListener() {
+    window.addEventListener('resize', () => {
+        clearTimeout(mobileResizeTimer);
+        mobileResizeTimer = setTimeout(applyMobileDataEnhancements, 150);
+    });
+}
+
+function setupMobileCardInteractions() {
+    // Intentionally empty. Native <details>/<summary> behavior handles toggle state.
+}
+
 // Event Listeners
 document.getElementById('loginForm').addEventListener('submit', handleLogin);
 document.getElementById('logoutButton').addEventListener('click', showLoginSection);
@@ -734,6 +1020,13 @@ document.getElementById('refreshPlayersButton').addEventListener('click', async 
         const response = await fetch(`./getplayers.php?_=${timestamp}`);
         const text = await response.text();
         const playersDiv = document.getElementById('playersList');
+
+        if (!response.ok) {
+            debugWarn('Players', 'Players endpoint returned non-OK response', {
+                status: response.status,
+                responseLength: text.length
+            });
+        }
         
         if (response.ok) {
             playersDiv.innerHTML = text;
@@ -1198,7 +1491,10 @@ async function loadHoleInfo(courseId, holeNumber) {
             document.getElementById('holeYardage').textContent = hole.yardage;
             document.getElementById('holePar').textContent = hole.par;
             document.getElementById('holeMensHcp').textContent = hole.mens_handicap;
-            document.getElementById('holeWomensHcp').textContent = hole.womens_handicap;
+            const womensHcpElement = document.getElementById('holeWomensHcp');
+            if (womensHcpElement) {
+                womensHcpElement.textContent = hole.womens_handicap;
+            }
             
             document.getElementById('currentRoundId').value = currentRound.roundId;
             document.getElementById('currentHoleNumber').value = holeNumber;
@@ -1336,11 +1632,12 @@ document.getElementById('matchResultForm').addEventListener('submit', async func
         if (data.success) {
             console.log('Match result saved successfully!');
             console.log('Match result data breakdown:', {
-                quota: data.quota,
                 holePoints: data.holePoints,
                 matchPoints: data.matchPoints,
                 roundBonusPoints: data.roundBonusPoints,
                 totalPoints: data.totalPoints,
+                netScore: data.netScore,
+                targetNetScore: data.targetNetScore,
                 message: data.message
             });
             
@@ -1374,11 +1671,12 @@ document.getElementById('matchResultForm').addEventListener('submit', async func
                 console.log('Debug info:', data.debug);
             }
             console.log('Points breakdown:', {
-                quota: data.quota,
                 holePoints: data.holePoints,
                 matchPoints: data.matchPoints,
                 roundBonusPoints: data.roundBonusPoints,
-                totalPoints: data.totalPoints
+                totalPoints: data.totalPoints,
+                netScore: data.netScore,
+                targetNetScore: data.targetNetScore
             });
             
         } else {
@@ -1940,6 +2238,188 @@ document.getElementById('refreshCoursesButton').addEventListener('click', async 
     }
 });
 
+function buildCourseHoleInputs(totalHoles, existingHoles) {
+    const holesByNumber = new Map((existingHoles || []).map(hole => [Number(hole.hole_number), hole]));
+    let html = '';
+
+    for (let holeNumber = 1; holeNumber <= totalHoles; holeNumber++) {
+        const hole = holesByNumber.get(holeNumber) || {};
+        const par = Number(hole.par) || 4;
+        const yardage = Number(hole.yardage) || '';
+        const mensHandicap = Number(hole.mens_handicap) || holeNumber;
+        const womensHandicap = Number(hole.womens_handicap) || holeNumber;
+
+        html += `
+            <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
+                <h6>Hole ${holeNumber}</h6>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
+                    <div>
+                        <label>Par:</label>
+                        <select id="edit_hole_${holeNumber}_par" required>
+                            <option value="3" ${par === 3 ? 'selected' : ''}>3</option>
+                            <option value="4" ${par === 4 ? 'selected' : ''}>4</option>
+                            <option value="5" ${par === 5 ? 'selected' : ''}>5</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Yardage:</label>
+                        <input type="number" id="edit_hole_${holeNumber}_yardage" min="50" max="700" value="${yardage}" required>
+                    </div>
+                    <div>
+                        <label>Men's HCP:</label>
+                        <input type="number" id="edit_hole_${holeNumber}_mens_hcp" min="1" max="18" value="${mensHandicap}" required>
+                    </div>
+                    <div>
+                        <label>Women's HCP:</label>
+                        <input type="number" id="edit_hole_${holeNumber}_womens_hcp" min="1" max="18" value="${womensHandicap}" required>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    return html;
+}
+
+async function openCourseOverview(courseId, courseName) {
+    try {
+        const response = await fetch(`./getcourseoverview.php?courseId=${courseId}`);
+        const text = await response.text();
+
+        if (!response.ok) {
+            document.getElementById('courseOverviewContent').innerHTML = `<p style="color: red;">Error loading course overview: ${text}</p>`;
+        } else {
+            document.getElementById('courseOverviewContent').innerHTML = text;
+        }
+
+        document.getElementById('courseOverviewTitle').textContent = `Course Overview - ${courseName}`;
+        hideOtherAdminSections(['courseOverviewSection']);
+        document.getElementById('courseOverviewSection').style.display = 'block';
+    } catch (error) {
+        document.getElementById('courseOverviewContent').innerHTML = `<p style="color: red;">Error loading course overview: ${error.message}</p>`;
+    }
+}
+
+async function openCourseEditor(courseId, courseName, holes, mode) {
+    const totalHoles = Number(holes);
+    if (!totalHoles) {
+        document.getElementById('editCourseMessage').innerHTML = '<p style="color: red;">Invalid course hole count.</p>';
+        return;
+    }
+
+    try {
+        const response = await fetch(`./getholes.php?courseId=${courseId}`);
+        const result = await response.json();
+
+        if (!response.ok || result.error) {
+            document.getElementById('editCourseMessage').innerHTML = `<p style="color: red;">Error loading hole details: ${result.error || 'Unknown error'}</p>`;
+            return;
+        }
+
+        document.getElementById('editCourseId').value = String(courseId);
+        document.getElementById('editCourseName').value = courseName;
+        document.getElementById('editHoleInputs').dataset.totalHoles = String(totalHoles);
+        document.getElementById('editHoleInputs').innerHTML = buildCourseHoleInputs(totalHoles, result);
+        document.getElementById('editCourseMessage').innerHTML = '';
+
+        document.getElementById('editCourseTitle').textContent = mode === 'complete'
+            ? `Complete Hole Details - ${courseName}`
+            : `Edit Course - ${courseName}`;
+
+        hideOtherAdminSections(['editCourseSection']);
+        document.getElementById('editCourseSection').style.display = 'block';
+    } catch (error) {
+        document.getElementById('editCourseMessage').innerHTML = `<p style="color: red;">Error loading editor: ${error.message}</p>`;
+    }
+}
+
+document.getElementById('coursesList').addEventListener('click', function(event) {
+    const button = event.target.closest('button[data-action]');
+    if (!button) {
+        return;
+    }
+
+    const action = button.dataset.action;
+    const courseId = Number(button.dataset.courseId);
+    const courseName = button.dataset.courseName || 'Course';
+    const holes = Number(button.dataset.courseHoles || 0);
+
+    if (!courseId) {
+        return;
+    }
+
+    if (action === 'view-course') {
+        openCourseOverview(courseId, courseName);
+        return;
+    }
+
+    if (action === 'edit-course') {
+        openCourseEditor(courseId, courseName, holes, 'edit');
+        return;
+    }
+
+    if (action === 'complete-holes') {
+        openCourseEditor(courseId, courseName, holes, 'complete');
+    }
+});
+
+document.getElementById('backToCoursesButton').addEventListener('click', function() {
+    document.getElementById('courseOverviewSection').style.display = 'none';
+    document.getElementById('coursesSection').style.display = 'block';
+});
+
+document.getElementById('backToCoursesFromEditButton').addEventListener('click', function() {
+    document.getElementById('editCourseSection').style.display = 'none';
+    document.getElementById('coursesSection').style.display = 'block';
+});
+
+document.getElementById('saveEditedCourseDetails').addEventListener('click', async function() {
+    const courseId = Number(document.getElementById('editCourseId').value);
+    const courseName = document.getElementById('editCourseName').value.trim();
+    const totalHoles = Number(document.getElementById('editHoleInputs').dataset.totalHoles || 0);
+
+    if (!courseId || !courseName || !totalHoles) {
+        document.getElementById('editCourseMessage').innerHTML = '<p style="color: red;">Missing course information.</p>';
+        return;
+    }
+
+    const holes = [];
+    for (let holeNumber = 1; holeNumber <= totalHoles; holeNumber++) {
+        holes.push({
+            holeNumber,
+            par: Number(document.getElementById(`edit_hole_${holeNumber}_par`).value),
+            yardage: Number(document.getElementById(`edit_hole_${holeNumber}_yardage`).value),
+            mensHandicap: Number(document.getElementById(`edit_hole_${holeNumber}_mens_hcp`).value),
+            womensHandicap: Number(document.getElementById(`edit_hole_${holeNumber}_womens_hcp`).value)
+        });
+    }
+
+    try {
+        const response = await fetch('./editcourse.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                courseId,
+                courseName,
+                holes
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            document.getElementById('editCourseMessage').innerHTML = '<p style="color: green;">Course updated successfully.</p>';
+            document.getElementById('refreshCoursesButton').click();
+        } else {
+            document.getElementById('editCourseMessage').innerHTML = `<p style="color: red;">Error updating course: ${result.error || 'Unknown error'}</p>`;
+        }
+    } catch (error) {
+        document.getElementById('editCourseMessage').innerHTML = `<p style="color: red;">Error updating course: ${error.message}</p>`;
+    }
+});
+
 document.getElementById('myRoundsButton').addEventListener('click', function() {
     document.getElementById('myRoundsSection').style.display = 'block';
     document.getElementById('courseSelectionSection').style.display = 'none';
@@ -2256,6 +2736,11 @@ document.getElementById('refreshSeasonsButton').addEventListener('click', loadSe
 document.addEventListener('DOMContentLoaded', function() {
     const currentYear = new Date().getFullYear();
     document.getElementById('newSeasonYear').value = currentYear + 1;
+
+    setupMobileDataEnhancementObservers();
+    setupMobileResizeListener();
+    setupMobileCardInteractions();
+    applyMobileDataEnhancements();
 });
 
 // Round Editing Functions
